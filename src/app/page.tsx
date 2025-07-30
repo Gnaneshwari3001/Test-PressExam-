@@ -1,3 +1,155 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BookOpenCheck, GraduationCap, Users, Star } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { exams } from "@/lib/data";
+import ExamCard from "@/components/exam-card";
+
 export default function Home() {
-  return <></>;
+  const featuredExams = exams.slice(0, 3);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10 dark:bg-primary/5">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
+                    Test Your Knowledge – Take Exams Online
+                  </h1>
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                    Welcome to TestPress, your premier destination for online examinations. Sharpen your skills, prepare for success, and achieve your goals.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Link href="/exams">
+                    <Button size="lg" className="bg-accent hover:bg-accent/90">Start Exam</Button>
+                  </Link>
+                  <Link href="/dashboard">
+                    <Button size="lg" variant="outline">View Results</Button>
+                  </Link>
+                  <Link href="/admin">
+                     <Button size="lg" variant="ghost">Login as Admin</Button>
+                  </Link>
+                </div>
+              </div>
+              <Image
+                src="https://placehold.co/600x400.png"
+                width="600"
+                height="400"
+                alt="Hero"
+                data-ai-hint="education exam"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <BookOpenCheck className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-2xl font-bold">150+</h3>
+                <p className="text-muted-foreground">Total Exams</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <Users className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-2xl font-bold">10,000+</h3>
+                <p className="text-muted-foreground">Students Enrolled</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <GraduationCap className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-2xl font-bold">95%</h3>
+                <p className="text-muted-foreground">Success Rate</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50 dark:bg-background">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 font-headline">
+              Featured Exams
+            </h2>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {featuredExams.map((exam) => (
+                <ExamCard key={exam.id} exam={exam} />
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link href="/exams">
+                <Button size="lg" variant="link">View All Exams →</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">What Our Students Say</h2>
+              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                Hear from students who have used TestPress to achieve their academic goals.
+              </p>
+            </div>
+            <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person happy" />
+                    <div>
+                      <CardTitle>Sarah L.</CardTitle>
+                      <div className="flex text-yellow-400">
+                        <Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p>"TestPress has been a game-changer for my exam preparations. The variety of exams and instant feedback are incredible."</p>
+                </CardContent>
+              </Card>
+               <Card>
+                <CardHeader>
+                   <div className="flex items-center gap-4">
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person smiling" />
+                    <div>
+                      <CardTitle>Mike P.</CardTitle>
+                      <div className="flex text-yellow-400">
+                        <Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p>"The user interface is so clean and intuitive. Taking exams has never been this stress-free. The performance analytics are a huge plus!"</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                   <div className="flex items-center gap-4">
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person professional" />
+                    <div>
+                      <CardTitle>Jessica T.</CardTitle>
+                      <div className="flex text-yellow-400">
+                        <Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/><Star size={16}/>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p>"The admin panel is powerful yet easy to use. Setting up new exams and managing students is a breeze."</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  );
 }
