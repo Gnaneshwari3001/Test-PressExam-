@@ -1,13 +1,17 @@
 "use client";
 
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GraduationCap, Menu } from "lucide-react";
+import { GraduationCap, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -19,6 +23,34 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Logout Failed",
+        description: "An error occurred while logging out.",
+        variant: "destructive"
+      });
+    }
+    setIsSheetOpen(false);
+  };
+
 
   const NavLinks = ({ className, onLinkClick }: { className?: string, onLinkClick?: () => void }) => (
     <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)}>
@@ -38,8 +70,6 @@ export default function Header() {
     </nav>
   );
 
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -53,12 +83,24 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ThemeToggle />
            <div className="hidden md:flex items-center space-x-2">
-             <Link href="/login">
-               <Button variant="ghost">Login</Button>
-            </Link>
-             <Link href="/signup">
-               <Button className="bg-accent hover:bg-accent/90">Sign Up</Button>
-            </Link>
+             {user ? (
+               <>
+                <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || 'User'} />
+                    <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <Button variant="ghost" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
+               </>
+             ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="bg-accent hover:bg-accent/90">Sign Up</Button>
+                </Link>
+              </>
+             )}
           </div>
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
@@ -71,12 +113,20 @@ export default function Header() {
               <div className="flex flex-col space-y-4">
                 <NavLinks className="flex-col items-start space-x-0 space-y-2" onLinkClick={() => setIsSheetOpen(false)} />
                 <div className="flex flex-col space-y-2 pt-4">
-                  <Link href="/login" passHref onClick={() => setIsSheetOpen(false)}>
-                    <Button variant="outline" className="w-full">Login</Button>
-                  </Link>
-                  <Link href="/signup" passHref onClick={() => setIsSheetOpen(false)}>
-                    <Button className="w-full bg-accent hover:bg-accent/90">Sign Up</Button>
-                  </Link>
+                  {user ? (
+                      <Button variant="outline" onClick={handleLogout} className="w-full">
+                        <LogOut className="mr-2 h-4 w-4" /> Logout
+                      </Button>
+                  ) : (
+                    <>
+                      <Link href="/login" passHref onClick={() => setIsSheetOpen(false)}>
+                        <Button variant="outline" className="w-full">Login</Button>
+                      </Link>
+                      <Link href="/signup" passHref onClick={() => setIsSheetOpen(false)}>
+                        <Button className="w-full bg-accent hover:bg-accent/90">Sign Up</Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
