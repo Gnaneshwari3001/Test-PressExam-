@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpenCheck, History, User, Edit } from "lucide-react";
+import { User, Edit } from "lucide-react";
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -67,14 +66,11 @@ export default function DashboardPage() {
                 </div>
                 <CardTitle className="text-2xl">For Students</CardTitle>
             </div>
-            <CardDescription>Access exams, review your results, and track your learning progress.</CardDescription>
+            <CardDescription>Access your personal dashboard, review results, and track your progress.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <Link href="/exams" passHref>
-                <Button className="w-full justify-start p-6 text-lg"><BookOpenCheck className="mr-4 h-5 w-5"/>Take a New Exam</Button>
-            </Link>
-            <Link href="/results" passHref>
-                <Button variant="secondary" className="w-full justify-start p-6 text-lg"><History className="mr-4 h-5 w-5"/>View Exam History</Button>
+            <Link href="/student/dashboard" passHref>
+                <Button className="w-full justify-start p-6 text-lg"><User className="mr-4 h-5 w-5"/>Go to Student Dashboard</Button>
             </Link>
           </CardContent>
         </Card>

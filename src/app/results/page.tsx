@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { FileEdit, History, BookOpenCheck } from "lucide-react";
+import { BookOpenCheck, ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const recentResults = [
   { id: 1, exam: "Introduction to Algebra", score: 85, date: "2023-10-26" },
@@ -25,12 +25,16 @@ const chartData = [
 ];
 
 export default function ResultsPage() {
+    const router = useRouter();
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Exam History</h1>
-        <p className="text-muted-foreground mt-2">Review your past exam results and performance.</p>
-      </header>
+       <div className="flex items-center mb-8">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <h1 className="text-3xl font-bold tracking-tight font-headline ml-4">Exam History</h1>
+      </div>
+      <p className="text-muted-foreground mt-2 mb-8">Review your past exam results and performance.</p>
       
       <div className="grid gap-8 lg:grid-cols-3">
         
@@ -110,9 +114,6 @@ export default function ResultsPage() {
                 <CardContent className="grid grid-cols-1 gap-4">
                     <Link href="/exams" passHref>
                         <Button className="w-full"><BookOpenCheck className="mr-2 h-4 w-4"/>Take a New Exam</Button>
-                    </Link>
-                    <Link href="/dashboard" passHref>
-                        <Button variant="secondary" className="w-full"><History className="mr-2 h-4 w-4"/>Back to Dashboard</Button>
                     </Link>
                 </CardContent>
             </Card>
