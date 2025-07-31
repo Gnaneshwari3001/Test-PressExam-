@@ -1,158 +1,101 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { FileEdit, History, BookOpenCheck } from "lucide-react";
-
-const recentResults = [
-  { id: 1, exam: "Introduction to Algebra", score: 85, date: "2023-10-26" },
-  { id: 2, exam: "Basics of Physics", score: 92, date: "2023-10-24" },
-  { id: 3, exam: "World War II", score: 78, date: "2023-10-22" },
-];
-
-const upcomingExams = [
-    { id: "literature-301", title: "Shakespearean Tragedies", subject: "Literature", date: "2023-11-05" },
-    { id: "cs-202", title: "Data Structures & Algorithms", subject: "Computer Science", date: "2023-11-10" },
-]
-
-const chartData = [
-  { name: "Algebra", score: 85 },
-  { name: "Physics", score: 92 },
-  { name: "History", score: 78 },
-  { name: "Geography", score: 95 },
-  { name: "Literature", score: 88 },
-];
+import { BookOpenCheck, History, User, Edit } from "lucide-react";
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push('/login');
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) {
+    return (
+        <div className="container mx-auto px-4 py-12 md:px-6">
+            <div className="space-y-8">
+                <Skeleton className="h-24 w-1/2" />
+                <div className="grid gap-8 md:grid-cols-2">
+                    <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                </div>
+            </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; 
+  }
+  
+  const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Student Dashboard</h1>
+        <h1 className="text-4xl font-bold tracking-tight font-headline">
+          Welcome, {displayName}!
+        </h1>
+        <p className="text-muted-foreground mt-2">What would you like to do today?</p>
       </header>
       
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1 space-y-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src="https://placehold.co/128x128.png" alt="Student" data-ai-hint="person happy" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-2xl">Jane Doe</CardTitle>
-                <CardDescription>jane.doe@example.com</CardDescription>
-              </div>
-            </CardHeader>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                <FileEdit className="mr-2 h-4 w-4" /> Edit Profile
-              </Button>
-            </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Exams</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                {upcomingExams.map(exam => (
-                    <li key={exam.id} className="flex justify-between items-center">
-                        <div>
-                            <p className="font-medium">{exam.title}</p>
-                            <p className="text-sm text-muted-foreground">{exam.subject} - {exam.date}</p>
-                        </div>
-                        <Link href={`/exams/${exam.id}`}>
-                            <Button size="sm" variant="ghost">Start</Button>
-                        </Link>
-                    </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+      <div className="grid gap-8 md:grid-cols-2">
+        
+        <Card className="hover:shadow-xl transition-shadow">
+          <CardHeader>
+            <div className="flex items-center gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                    <User className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="text-2xl">For Students</CardTitle>
+            </div>
+            <CardDescription>Access exams, review your results, and track your learning progress.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <Link href="/exams" passHref>
+                <Button className="w-full justify-start p-6 text-lg"><BookOpenCheck className="mr-4 h-5 w-5"/>Take a New Exam</Button>
+            </Link>
+            <Link href="/results" passHref>
+                <Button variant="secondary" className="w-full justify-start p-6 text-lg"><History className="mr-4 h-5 w-5"/>View Exam History</Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-           <Card>
-            <CardHeader>
-              <CardTitle>Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4">
-                <Link href="/exams" passHref>
-                    <Button className="w-full"><BookOpenCheck className="mr-2 h-4 w-4"/>Take a New Exam</Button>
-                </Link>
-                <Link href="/results" passHref>
-                    <Button variant="secondary" className="w-full"><History className="mr-2 h-4 w-4"/>View Exam History</Button>
-                </Link>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="hover:shadow-xl transition-shadow">
+          <CardHeader>
+            <div className="flex items-center gap-4">
+                 <div className="bg-accent/10 p-3 rounded-full">
+                    <Edit className="h-8 w-8 text-accent" />
+                </div>
+                <CardTitle className="text-2xl">For Instructors</CardTitle>
+            </div>
+            <CardDescription>Create, manage, and distribute exams to your students seamlessly.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+             <Link href="/admin" passHref>
+                <Button variant="default" className="w-full justify-start p-6 text-lg bg-accent hover:bg-accent/90"><Edit className="mr-4 h-5 w-5"/>Create & Manage Exams</Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-        <div className="lg:col-span-2 space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Results</CardTitle>
-              <CardDescription>Your performance in the last few exams.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Exam</TableHead>
-                    <TableHead className="text-center">Score</TableHead>
-                    <TableHead className="text-right">Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentResults.map((result) => (
-                    <TableRow key={result.id}>
-                      <TableCell className="font-medium">{result.exam}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={result.score > 80 ? "default" : "secondary"}>
-                          {result.score}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{result.date}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Over Time</CardTitle>
-              <CardDescription>Your scores across different subjects.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `${value}%`}
-                    />
-                    <Bar dataKey="score" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );

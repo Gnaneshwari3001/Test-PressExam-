@@ -9,7 +9,7 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Admin Panel</h1>
+        <h1 className="text-3xl font-bold tracking-tight font-headline">Instructor Panel</h1>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" /> Add New Exam
         </Button>
@@ -37,8 +37,8 @@ export default function AdminPage() {
                   <TableCell className="font-medium">{exam.title}</TableCell>
                   <TableCell>{exam.subject}</TableCell>
                   <TableCell>
-                    <Badge variant={Math.random() > 0.5 ? "default" : "outline"}>
-                      {Math.random() > 0.5 ? "Active" : "Inactive"}
+                    <Badge variant={"default"}>
+                      Active
                     </Badge>
                   </TableCell>
                   <TableCell>{exam.questionCount}</TableCell>

@@ -29,10 +29,7 @@ export default function Home() {
                     <Button size="lg" className="bg-accent hover:bg-accent/90">Start Exam</Button>
                   </Link>
                   <Link href="/dashboard">
-                    <Button size="lg" variant="outline">View Results</Button>
-                  </Link>
-                  <Link href="/admin">
-                     <Button size="lg" variant="ghost">Login as Admin</Button>
+                    <Button size="lg" variant="outline">Go to Dashboard</Button>
                   </Link>
                 </div>
               </div>
