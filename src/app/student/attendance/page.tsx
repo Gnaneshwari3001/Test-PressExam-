@@ -68,6 +68,7 @@ export default function AttendancePage() {
   }, []);
 
   const leaves = useMemo(() => attendanceLog.filter(log => log.status === "Leave"), []);
+  const absences = useMemo(() => attendanceLog.filter(log => log.status === "Absent"), []);
 
   const selectedDayRecord = useMemo(() => {
     if (!date) return null;
@@ -115,15 +116,45 @@ export default function AttendancePage() {
                      <p className="text-xs text-muted-foreground">Out of {totalDays} working days</p>
                 </CardContent>
             </Card>
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Absent</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-red-600">{totalAbsent}</div>
-                    <p className="text-xs text-muted-foreground">Marked as absent</p>
-                </CardContent>
-            </Card>
+             <Dialog>
+                <DialogTrigger asChild>
+                    <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Total Absent</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-600">{totalAbsent}</div>
+                            <p className="text-xs text-muted-foreground">Marked as absent</p>
+                        </CardContent>
+                    </Card>
+                </DialogTrigger>
+                <DialogContent>
+                     <DialogHeader>
+                        <DialogTitle>Absence History</DialogTitle>
+                     </DialogHeader>
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Reason</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {absences.map((absence, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{format(new Date(absence.date), "PPP")}</TableCell>
+                                    <TableCell className="font-medium">{absence.reason}</TableCell>
+                                </TableRow>
+                            ))}
+                            {absences.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center text-muted-foreground">No absences recorded.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </DialogContent>
+            </Dialog>
             <Dialog>
                 <DialogTrigger asChild>
                     <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
@@ -217,5 +248,4 @@ export default function AttendancePage() {
         </div>
     </div>
   );
-
-    
+}
