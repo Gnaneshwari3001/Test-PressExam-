@@ -21,12 +21,14 @@ import { auth, database } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, sendEmailVerification, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { ref, set, get } from "firebase/database";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
   confirmPassword: z.string(),
+  role: z.enum(["student", "instructor"], { required_error: "Please select a role." }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -43,6 +45,7 @@ export default function SignupPage() {
       email: "",
       password: "",
       confirmPassword: "",
+      role: "student",
     },
   });
 
@@ -57,7 +60,7 @@ export default function SignupPage() {
       await set(ref(database, 'users/' + user.uid), {
         name: values.name,
         email: values.email,
-        role: "student" // Default role
+        role: values.role
       });
 
       await sendEmailVerification(user);
@@ -88,11 +91,11 @@ export default function SignupPage() {
       const snapshot = await get(userRef);
 
       if (!snapshot.exists()) {
-        // New user, add to database
+        // New user, add to database with default role
         await set(userRef, {
           name: user.displayName,
           email: user.email,
-          role: "student" // Default role
+          role: "student" 
         });
       }
       
@@ -170,6 +173,40 @@ export default function SignupPage() {
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Sign up as</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="student" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Student
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="instructor" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Instructor
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
