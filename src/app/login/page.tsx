@@ -46,16 +46,6 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      if (!user.emailVerified) {
-        toast({
-          title: "Email Not Verified",
-          description: "Please verify your email before logging in. A new verification email has been sent.",
-          variant: "destructive",
-        });
-        await sendEmailVerification(user); // Resend verification email
-        return;
-      }
-      
       // Check user role in Realtime Database
       const userRef = ref(database, 'users/' + user.uid);
       const snapshot = await get(userRef);
@@ -63,6 +53,17 @@ export default function LoginPage() {
       if (snapshot.exists()) {
         const userData = snapshot.val();
         
+        // Skip email verification for admins
+        if (userData.role !== 'admin' && !user.emailVerified) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please verify your email before logging in. A new verification email has been sent.",
+            variant: "destructive",
+          });
+          await sendEmailVerification(user); // Resend verification email
+          return;
+        }
+
         toast({
           title: "Login Successful",
           description: "Welcome back!",
