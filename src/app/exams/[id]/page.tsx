@@ -19,6 +19,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 export default function TakeExamPage() {
   const router = useRouter();
@@ -31,16 +35,25 @@ export default function TakeExamPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
 
   useEffect(() => {
-    const examData = getExamById(examId);
-    if (examData) {
-      setExam(examData);
-      setTimeLeft(examData.duration * 60);
-      setIsLoading(false);
-    } else {
-      router.push('/404');
-    }
+     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        const examData = getExamById(examId);
+        if (examData) {
+          setExam(examData);
+          setTimeLeft(examData.duration * 60);
+        } else {
+          router.push('/404');
+        }
+        setIsLoading(false);
+      } else {
+        router.push('/login');
+      }
+    });
+    return () => unsubscribe();
   }, [examId, router]);
 
   const handleSubmit = useCallback(() => {
@@ -64,8 +77,17 @@ export default function TakeExamPage() {
     return () => clearInterval(timer);
   }, [isLoading, timeLeft, exam, handleSubmit]);
 
-  if (isLoading || !exam) {
-    return <div className="flex items-center justify-center h-screen">Loading Exam...</div>;
+  if (isLoading || !exam || !user) {
+    return (
+        <div className="container mx-auto px-4 py-12 md:px-6">
+            <div className="flex justify-center">
+                <div className="space-y-8 w-full max-w-4xl">
+                    <Skeleton className="h-48 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                </div>
+            </div>
+        </div>
+    );
   }
 
   const handleAnswerChange = (questionId: number, value: string) => {
