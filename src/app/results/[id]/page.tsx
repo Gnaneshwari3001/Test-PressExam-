@@ -12,7 +12,7 @@ import { CheckCircle, XCircle, AlertCircle, Lightbulb, BarChart2, Download } fro
 import Link from "next/link";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Badge } from "@/components/ui/badge";
-import type { Exam } from "@/lib/types";
+import type { Exam, Question } from "@/lib/types";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import ScoreCard from "@/components/score-card";
@@ -50,13 +50,22 @@ export default function ResultsPage() {
         setLoading(false);
         return;
       }
+      
+      const storedQuestions = sessionStorage.getItem(`exam_questions_${examId}`);
+      if (!storedQuestions) {
+        setError("Exam question sequence not found. Cannot display results.");
+        setLoading(false);
+        return;
+      }
 
       try {
         const userAnswers = JSON.parse(storedAnswers);
+        const shuffledQuestions: Question[] = JSON.parse(storedQuestions);
+
         // Wait for user to be set before calling getAnalysis
         const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
             if(currentUser) {
-                const response = await getAnalysis(examId, userAnswers, currentUser.displayName ?? 'Student');
+                const response = await getAnalysis(examId, userAnswers, currentUser.displayName ?? 'Student', shuffledQuestions);
 
                 if (response.success && response.analysis && response.exam) {
                     setResult({
@@ -79,7 +88,12 @@ export default function ResultsPage() {
     };
 
     fetchResults();
-    return () => unsubscribe();
+    
+    // Cleanup session storage after leaving the page
+    return () => {
+        sessionStorage.removeItem(`exam_questions_${examId}`);
+        unsubscribe();
+    }
   }, [examId, router]);
 
   if (loading) {
@@ -213,10 +227,12 @@ export default function ResultsPage() {
                                               {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0"/> : <XCircle className="h-4 w-4 shrink-0" />}
                                               <span>Your answer: {userAnswer || <Badge variant="destructive">Not Answered</Badge>}</span>
                                           </p>
-                                          <p className="text-sm flex items-center gap-2 text-primary">
-                                              <CheckCircle className="h-4 w-4 shrink-0"/> 
-                                              <span>Correct answer: {q.correctAnswer}</span>
-                                          </p>
+                                          {!isCorrect && (
+                                              <p className="text-sm flex items-center gap-2 text-primary">
+                                                  <CheckCircle className="h-4 w-4 shrink-0"/> 
+                                                  <span>Correct answer: {q.correctAnswer}</span>
+                                              </p>
+                                          )}
                                       </div>
                                   </div>
                               )

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getExamById } from "@/lib/data";
-import type { Exam } from "@/lib/types";
+import type { Exam, Question } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -24,12 +24,23 @@ import { auth } from '@/lib/firebase';
 import { Skeleton } from "@/components/ui/skeleton";
 
 
+// Function to shuffle an array
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
 export default function TakeExamPage() {
   const router = useRouter();
   const params = useParams();
   const examId = params.id as string;
   
   const [exam, setExam] = useState<Exam | null>(null);
+  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [timeLeft, setTimeLeft] = useState(0);
@@ -43,7 +54,9 @@ export default function TakeExamPage() {
         setUser(currentUser);
         const examData = getExamById(examId);
         if (examData) {
-          setExam(examData);
+          const questions = shuffleArray(examData.questions);
+          setExam({...examData, questions});
+          setShuffledQuestions(questions);
           setTimeLeft(examData.duration * 60);
         } else {
           router.push('/404');
@@ -59,8 +72,10 @@ export default function TakeExamPage() {
   const handleSubmit = useCallback(() => {
     if (!exam) return;
     localStorage.setItem(`exam_answers_${exam.id}`, JSON.stringify(answers));
+    // Pass shuffled questions to results page
+    sessionStorage.setItem(`exam_questions_${exam.id}`, JSON.stringify(shuffledQuestions));
     router.push(`/results/${exam.id}`);
-  }, [exam, answers, router]);
+  }, [exam, answers, router, shuffledQuestions]);
 
   useEffect(() => {
     if (isLoading || timeLeft <= 0) {
@@ -95,7 +110,7 @@ export default function TakeExamPage() {
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < exam.questions.length - 1) {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -106,8 +121,8 @@ export default function TakeExamPage() {
     }
   };
   
-  const currentQuestion = exam.questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / exam.questions.length) * 100;
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -122,7 +137,7 @@ export default function TakeExamPage() {
               <span>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</span>
             </div>
           </div>
-          <CardDescription>Question {currentQuestionIndex + 1} of {exam.questions.length}</CardDescription>
+          <CardDescription>Question {currentQuestionIndex + 1} of {shuffledQuestions.length}</CardDescription>
           <Progress value={progress} className="w-full mt-2" />
         </CardHeader>
         <CardContent className="min-h-[300px]">
@@ -146,7 +161,7 @@ export default function TakeExamPage() {
           <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}>
             <ChevronLeft className="h-4 w-4 mr-2" /> Previous
           </Button>
-          {currentQuestionIndex === exam.questions.length - 1 ? (
+          {currentQuestionIndex === shuffledQuestions.length - 1 ? (
             <Button className="bg-accent hover:bg-accent/90" onClick={() => setShowSubmitConfirm(true)}>
               <Check className="h-4 w-4 mr-2" /> Submit
             </Button>
