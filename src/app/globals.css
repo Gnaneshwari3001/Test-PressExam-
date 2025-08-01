@@ -92,14 +92,4 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .no-print {
-    display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
-  main {
-    padding: 0;
-    margin: 0;
-  }
 }

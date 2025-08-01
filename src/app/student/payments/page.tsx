@@ -32,6 +32,8 @@ export default function PaymentsPage() {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+    const [isPrinting, setIsPrinting] = useState(false);
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -64,11 +66,23 @@ export default function PaymentsPage() {
 
     const handleDownloadReceipt = (payment: Payment) => {
         setSelectedPayment(payment);
+        setIsPrinting(true);
         setTimeout(() => {
             window.print();
             setSelectedPayment(null);
+            setIsPrinting(false);
         }, 100); 
     };
+    
+    if (isPrinting && selectedPayment && user) {
+        return (
+             <ReceiptCard 
+                payment={selectedPayment} 
+                studentName={user.displayName ?? "Student"}
+                studentEmail={user.email ?? ""}
+              />
+        )
+    }
 
     if (loading) {
         return (
@@ -93,17 +107,7 @@ export default function PaymentsPage() {
     }
 
   return (
-    <>
-      <div className="print-only hidden">
-          {selectedPayment && user && (
-              <ReceiptCard 
-                payment={selectedPayment} 
-                studentName={user.displayName ?? "Student"}
-                studentEmail={user.email ?? ""}
-              />
-          )}
-      </div>
-      <div className="no-print">
+      <div>
         <header className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight font-headline">Payments</h1>
           <p className="text-muted-foreground mt-1">View your transaction history and download receipts.</p>
@@ -145,6 +149,5 @@ export default function PaymentsPage() {
           </CardContent>
         </Card>
       </div>
-    </>
   );
 }
