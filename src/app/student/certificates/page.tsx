@@ -10,6 +10,8 @@ import { auth } from '@/lib/firebase';
 import CertificateCard from "@/components/certificate-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { exams } from "@/lib/data";
+import type { Exam, Question } from "@/lib/types";
 
 
 interface Certificate {
@@ -18,24 +20,39 @@ interface Certificate {
     completionDate: string;
 }
 
-const earnedCertificates: Certificate[] = [
-    { id: "cert_1", courseName: "Basics of Physics", completionDate: "2023-10-24" },
-    { id: "cert_2", courseName: "World Capitals", completionDate: "2023-10-20" },
-    { id: "cert_3", courseName: "Data Structures & Algorithms", completionDate: "2023-10-18" },
-];
-
 
 export default function CertificatesPage() {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
     const [showBackButton, setShowBackButton] = useState(false);
+    const [earnedCertificates, setEarnedCertificates] = useState<Certificate[]>([]);
     const router = useRouter();
     
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
+
+                // This logic should run on the client-side
+                const passedExams: Certificate[] = [];
+                exams.forEach(exam => {
+                    const storedAnswersRaw = localStorage.getItem(`exam_answers_${exam.id}`);
+                    if (storedAnswersRaw) {
+                        const userAnswers = JSON.parse(storedAnswersRaw);
+                        const correctAnswers = exam.questions.filter(q => userAnswers[q.id] === q.correctAnswer).length;
+                        const score = (correctAnswers / exam.questionCount) * 100;
+                        if (score >= 80) { // Assuming 80% is the passing score for a certificate
+                            passedExams.push({
+                                id: exam.id,
+                                courseName: exam.title,
+                                completionDate: new Date().toISOString().split('T')[0] // Use current date as mock completion
+                            });
+                        }
+                    }
+                });
+                setEarnedCertificates(passedExams);
+
             } else {
                 router.push('/login');
             }
@@ -115,7 +132,7 @@ export default function CertificatesPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Award /> Earned Certificates</CardTitle>
-          <CardDescription>A list of all the certificates you have earned.</CardDescription>
+          <CardDescription>A list of all the certificates you have earned by scoring 80% or higher.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             {earnedCertificates.map((cert) => (
@@ -138,7 +155,7 @@ export default function CertificatesPage() {
             {earnedCertificates.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                     <p>You have not earned any certificates yet.</p>
-                    <p>Keep taking exams to earn them!</p>
+                    <p>Take an exam and score above 80% to earn one!</p>
                 </div>
             )}
         </CardContent>
