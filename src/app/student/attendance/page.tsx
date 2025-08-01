@@ -226,7 +226,7 @@ export default function AttendancePage() {
                             defaultMonth={new Date()}
                             captionLayout="dropdown-buttons"
                             fromYear={2023}
-                            toYear={new Date().getFullYear() + 1}
+                            toYear={2090}
                         />
                     </CardContent>
                 </Card>
