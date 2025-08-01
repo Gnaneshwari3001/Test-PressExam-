@@ -1,3 +1,4 @@
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,19 @@ const subjects = [
 
 
 export default function SubjectsPage() {
+  const handleDownload = (subjectName: string) => {
+    const content = `This is a placeholder PDF document for the subject: ${subjectName}. Replace this with your actual study material.`;
+    const blob = new Blob([content], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${subjectName.toLowerCase().replace(/ /g, '-')}-materials.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <header className="mb-8">
@@ -38,7 +52,9 @@ export default function SubjectsPage() {
               <p className="text-xs text-muted-foreground">Manage exams and questions for this subject.</p>
             </CardContent>
             <CardFooter className="flex flex-col items-stretch gap-2">
-                <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Materials</Button>
+                <Button variant="outline" onClick={() => handleDownload(subject.name)}>
+                  <Download className="mr-2 h-4 w-4" /> Materials
+                </Button>
                 <Link href={`/exams/${subject.examId}`} passHref>
                     <Button className="w-full"><PlayCircle className="mr-2 h-4 w-4" /> Take Exam</Button>
                 </Link>
