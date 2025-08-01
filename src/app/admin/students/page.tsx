@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { ref, get, query, orderByChild, equalTo } from "firebase/database";
+import { ref, get } from "firebase/database";
 import { database } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -28,20 +28,22 @@ export default function StudentsPage() {
     const fetchStudents = async () => {
       setLoading(true);
       const usersRef = ref(database, 'users');
-      const studentQuery = query(usersRef, orderByChild('role'), equalTo('student'));
       
       try {
-        const snapshot = await get(studentQuery);
+        const snapshot = await get(usersRef);
         if (snapshot.exists()) {
+          const allUsers = snapshot.val();
           const studentsData: Student[] = [];
-          snapshot.forEach((childSnapshot) => {
-            const studentData = childSnapshot.val();
-            studentsData.push({ 
-              uid: childSnapshot.key!, 
-              name: studentData.name,
-              email: studentData.email,
-              photoURL: studentData.photoURL
-            });
+          Object.keys(allUsers).forEach((uid) => {
+            const userData = allUsers[uid];
+            if (userData.role === 'student') {
+              studentsData.push({ 
+                uid: uid, 
+                name: userData.name,
+                email: userData.email,
+                photoURL: userData.photoURL
+              });
+            }
           });
           setStudents(studentsData);
         }
