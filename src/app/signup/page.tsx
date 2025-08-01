@@ -72,12 +72,20 @@ export default function SignupPage() {
       });
       router.push("/login");
     } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        toast({
+          title: "Signup Failed",
+          description: "This email address is already in use. Please log in instead.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signup Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
       console.error(error);
-      toast({
-        title: "Signup Failed",
-        description: error.message,
-        variant: "destructive",
-      });
     }
   }
 
