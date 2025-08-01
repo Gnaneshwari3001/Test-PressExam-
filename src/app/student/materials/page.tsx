@@ -1,7 +1,7 @@
 
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FolderKanban, Download, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -15,17 +15,47 @@ const materials = [
     { id: 5, subject: "Computer Networks", fileName: "osi-model-guide.pdf", uploader: "Dr. Sarah Harding", date: "2023-11-01" },
 ];
 
+const getSubjectContent = (subjectName: string): string => {
+    // This is mock content. In a real application, this would fetch from a database or API.
+    const contentMap: { [key: string]: string } = {
+        "Data Structures": "This document contains comprehensive notes on Data Structures, including arrays, linked lists, stacks, queues, trees, and graphs.",
+        "Algorithms": "This is a cheatsheet for common algorithms, covering sorting (Bubble, Merge, Quick), searching (Linear, Binary), and graph traversal (BFS, DFS).",
+        "Operating Systems": "This document covers core OS concepts like process management, memory management, file systems, and concurrency.",
+        "Computer Networks": "A guide to the OSI model, TCP/IP, and common networking protocols.",
+    };
+    return contentMap[subjectName] || `No content available for ${subjectName}.`;
+};
+
 
 export default function MaterialsPage() {
     const { toast } = useToast();
 
-    const handleDownload = (fileName: string) => {
+    const handleDownload = (subject: string, fileName: string) => {
+        const content = getSubjectContent(subject);
+        if (content.startsWith("No content")) {
+            toast({
+                title: "Download Failed",
+                description: "No downloadable material found for this subject.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // The filename is changed to .txt as the content is plain text.
+        a.download = fileName.replace('.pdf', '.txt');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
         toast({
-            title: "Downloading...",
-            description: `Your download for "${fileName}" will start shortly.`,
+            title: "Download Started",
+            description: `Your download for "${fileName.replace('.pdf', '.txt')}" has started.`,
         });
-        // In a real app, you would trigger the actual file download here.
-        // For demonstration, we'll just show the toast.
     }
 
   return (
@@ -51,7 +81,7 @@ export default function MaterialsPage() {
                             </p>
                         </div>
                     </div>
-                     <Button variant="outline" onClick={() => handleDownload(material.fileName)}>
+                     <Button variant="outline" onClick={() => handleDownload(material.subject, material.fileName)}>
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>
