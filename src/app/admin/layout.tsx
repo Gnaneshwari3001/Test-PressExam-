@@ -15,6 +15,8 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { get, ref } from "firebase/database";
 
+type UserRole = 'student' | 'instructor' | 'admin';
+
 export default function AdminDashboardLayout({
     children,
 }: {
@@ -24,6 +26,7 @@ export default function AdminDashboardLayout({
     const router = useRouter();
     const pathname = usePathname();
     const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [role, setRole] = useState<UserRole | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,8 +34,15 @@ export default function AdminDashboardLayout({
             if (currentUser) {
                 const userRef = ref(database, 'users/' + currentUser.uid);
                 const snapshot = await get(userRef);
-                if (snapshot.exists() && (snapshot.val().role === 'instructor' || snapshot.val().role === 'admin')) {
-                    setUser(currentUser);
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    if (userData.role === 'instructor' || userData.role === 'admin') {
+                        setUser(currentUser);
+                        setRole(userData.role);
+                    } else {
+                        // If a student tries to access, redirect them
+                        router.push('/student/dashboard');
+                    }
                 } else {
                     router.push('/login');
                 }
@@ -78,14 +88,14 @@ export default function AdminDashboardLayout({
         );
     }
     
-    if (!user) {
+    if (!user || !role) {
         return null;
     }
 
     const displayName = user.displayName || user.email?.split('@')[0] || 'User';
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
-    const menuItems = [
+    const adminMenuItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
         { href: "/admin/exams", label: "Exam Oversight", icon: BookOpenCheck, tooltip: "Exam Oversight" },
         { href: "/admin/students", label: "User Management", icon: Users, tooltip: "User Management" },
@@ -93,6 +103,18 @@ export default function AdminDashboardLayout({
         { href: "/admin/notifications", label: "Announcements", icon: Bell, tooltip: "Announcements" },
         { href: "/admin/profile", label: "Admin Profile", icon: ShieldCheck, tooltip: "Admin Profile" },
     ];
+    
+    const instructorMenuItems = [
+        { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
+        { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck, tooltip: "Manage Exams" },
+        { href: "/admin/students", label: "My Students", icon: Users, tooltip: "My Students" },
+        { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
+        { href: "/admin/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" },
+        { href: "/admin/profile", label: "My Profile", icon: User, tooltip: "My Profile" },
+    ]
+
+    const menuItems = role === 'admin' ? adminMenuItems : instructorMenuItems;
+    const layoutTitle = role === 'admin' ? 'Admin Panel' : 'Instructor Panel';
 
     return (
         <SidebarProvider>
@@ -105,7 +127,7 @@ export default function AdminDashboardLayout({
                         </Avatar>
                         <div className="flex flex-col">
                            <span className="font-semibold text-sm">{displayName}</span>
-                           <span className="text-xs text-muted-foreground">{user.email}</span>
+                           <span className="text-xs text-muted-foreground capitalize">{role}</span>
                         </div>
                     </div>
                 </SidebarHeader>
@@ -141,6 +163,7 @@ export default function AdminDashboardLayout({
                     <div className="md:hidden">
                        <SidebarTrigger/>
                     </div>
+                     <h2 className="font-bold text-lg hidden md:block">{layoutTitle}</h2>
                     <div className="flex-1" />
                     <ThemeToggle />
                 </header>

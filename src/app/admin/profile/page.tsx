@@ -24,9 +24,12 @@ const formSchema = z.object({
   bio: z.string().max(200, "Bio must be less than 200 characters.").optional(),
 });
 
+type UserRole = 'student' | 'instructor' | 'admin';
+
 export default function ProfilePage() {
     const { toast } = useToast();
     const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [role, setRole] = useState<UserRole | null>(null);
     const [loading, setLoading] = useState(true);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -45,13 +48,13 @@ export default function ProfilePage() {
                 form.setValue("displayName", currentUser.displayName || "");
                 form.setValue("email", currentUser.email || "");
 
-                // Fetch additional user data from DB (like bio)
                 const userRef = ref(database, `users/${currentUser.uid}`);
                 const snapshot = await get(userRef);
                 if (snapshot.exists()) {
-                    form.setValue("bio", snapshot.val().bio || "");
+                    const userData = snapshot.val();
+                    form.setValue("bio", userData.bio || "");
+                    setRole(userData.role);
                 }
-
             }
             setLoading(false);
         });
@@ -62,10 +65,7 @@ export default function ProfilePage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (!user) return;
         try {
-            // Update Firebase Auth profile
             await updateProfile(user, { displayName: values.displayName });
-
-            // Update Realtime Database
             const userRef = ref(database, `users/${user.uid}`);
             await update(userRef, {
                 name: values.displayName,
@@ -89,10 +89,12 @@ export default function ProfilePage() {
         return <Skeleton className="h-96 w-full" />;
     }
 
+    const pageTitle = role === 'admin' ? "Admin Profile" : "Instructor Profile";
+
   return (
     <div>
         <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">Admin Profile</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-headline">{pageTitle}</h1>
             <p className="text-muted-foreground mt-1">Manage your account and personal information.</p>
         </header>
 
