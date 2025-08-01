@@ -20,10 +20,12 @@ export default function DuesPage() {
 
     const handlePayNow = (dueId: string) => {
         toast({
-            title: "Processing Payment...",
-            description: `Your payment for ${dueId} is being processed.`,
+            title: "Redirecting to Payment Gateway...",
+            description: `You are being redirected to complete your payment for ${dueId}.`,
         });
-        // In a real application, you would integrate a payment gateway here.
+        // In a real application, you would redirect to an actual payment gateway URL.
+        // For this demo, we'll redirect to the payments history page.
+        router.push('/student/payments');
     }
 
     const handleRequestExtension = (dueDescription: string) => {
