@@ -38,7 +38,7 @@ export default function Home() {
                 width="600"
                 height="400"
                 alt="Hero"
-                data-ai-hint="education exam"
+                data-ai-hint="modern classroom"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
               />
             </div>
@@ -97,7 +97,7 @@ export default function Home() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person happy" />
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="female student" />
                     <div>
                       <CardTitle>Sarah L.</CardTitle>
                       <div className="flex text-yellow-400">
@@ -113,7 +113,7 @@ export default function Home() {
                <Card>
                 <CardHeader>
                    <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person smiling" />
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="male student" />
                     <div>
                       <CardTitle>Mike P.</CardTitle>
                       <div className="flex text-yellow-400">
@@ -129,7 +129,7 @@ export default function Home() {
               <Card>
                 <CardHeader>
                    <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="person professional" />
+                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="female teacher" />
                     <div>
                       <CardTitle>Jessica T.</CardTitle>
                       <div className="flex text-yellow-400">

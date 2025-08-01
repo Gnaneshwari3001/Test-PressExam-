@@ -31,7 +31,7 @@ export default function AboutPage() {
               alt="Our Mission"
               width={500}
               height={300}
-              data-ai-hint="team collaboration"
+              data-ai-hint="diverse students"
               className="rounded-lg shadow-lg"
             />
           </div>
