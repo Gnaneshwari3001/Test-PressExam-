@@ -17,8 +17,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { auth, database } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { ref, set } from "firebase/database";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -47,7 +48,16 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      await sendEmailVerification(userCredential.user);
+      const user = userCredential.user;
+      
+      // Add user to Realtime Database
+      await set(ref(database, 'users/' + user.uid), {
+        name: values.name,
+        email: values.email,
+        role: "student" // Default role
+      });
+
+      await sendEmailVerification(user);
       
       toast({
         title: "Account Created!",
