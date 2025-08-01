@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
@@ -8,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { signOut, onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,6 +21,7 @@ export default function StudentDashboardLayout({
 }) {
     const { toast } = useToast();
     const router = useRouter();
+    const pathname = usePathname();
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -76,6 +78,22 @@ export default function StudentDashboardLayout({
     const displayName = user.displayName || user.email?.split('@')[0] || 'User';
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
+    const menuItems = [
+        { href: "/student/dashboard", label: "Dashboard", icon: User, tooltip: "Dashboard" },
+        { href: "/student/profile", label: "Profile Info", icon: User, tooltip: "Profile Info" },
+        { href: "/student/subjects", label: "Subjects", icon: Book, tooltip: "Subjects" },
+        { href: "/exams", label: "Exams", icon: BookOpenCheck, tooltip: "Exams" },
+        { href: "/student/attendance", label: "Attendance", icon: CalendarCheck, tooltip: "Attendance" },
+        { href: "/results", label: "Marks", icon: ClipboardList, tooltip: "Marks" },
+        { href: "/student/grade", label: "Grade", icon: GraduationCap, tooltip: "Grade" },
+        { href: "/student/payments", label: "Payments", icon: Banknote, tooltip: "Payments" },
+        { href: "/student/dues", label: "Dues", icon: FileWarning, tooltip: "Dues" },
+        { href: "/student/materials", label: "Materials", icon: FolderKanban, tooltip: "Materials" },
+        { href: "/student/certificates", label: "Certificates", icon: Award, tooltip: "Certificates" },
+        { href: "/student/bonafides", label: "Bonafides", icon: FileText, tooltip: "Bonafides" },
+        { href: "/student/query", label: "Raise a query", icon: HelpCircle, tooltip: "Raise a query" },
+    ];
+
     return (
         <SidebarProvider>
             <Sidebar>
@@ -93,42 +111,20 @@ export default function StudentDashboardLayout({
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/student/dashboard" tooltip="Profile" isActive={true}><User/>Profile Info</SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Subjects"><Book/>Subjects</SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/exams" tooltip="Exams"><BookOpenCheck/>Exams</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Attendance"><CalendarCheck/>Attendance</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="/results" tooltip="Marks"><ClipboardList/>Marks</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Grade"><GraduationCap/>Grade</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Payments"><Banknote/>Payments</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Dues"><FileWarning/>Dues</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Materials"><FolderKanban/>Materials</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Certificates"><Award/>Certificates</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Bonafides"><FileText/>Bonafides</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Raise a query"><HelpCircle/>Raise a query</SidebarMenuButton>
-                        </SidebarMenuItem>
+                         {menuItems.map((item) => (
+                            <SidebarMenuItem key={item.href}>
+                                <Link href={item.href} passHref>
+                                    <SidebarMenuButton 
+                                        asChild={false}
+                                        tooltip={item.tooltip} 
+                                        isActive={pathname === item.href}
+                                    >
+                                        <item.icon className="h-4 w-4" />
+                                        {item.label}
+                                    </SidebarMenuButton>
+                                </Link>
+                            </SidebarMenuItem>
+                        ))}
                     </SidebarMenu>
                 </SidebarContent>
                  <SidebarHeader>

@@ -1,7 +1,8 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpenCheck, CheckCircle, Clock, FileText, HelpCircle } from "lucide-react";
+import { BookOpenCheck, CheckCircle, Clock, FileText, HelpCircle, Award } from "lucide-react";
 
 export default function StudentDashboardPage() {
     return (
@@ -51,7 +52,7 @@ export default function StudentDashboardPage() {
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium">Certificates Earned</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <Award className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">3</div>
