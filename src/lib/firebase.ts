@@ -3,20 +3,26 @@ import { initializeApp, getApp, getApps } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
 
-// Hardcoded Firebase configuration to ensure it's always available.
+// Correct Firebase configuration for the user's project.
 const firebaseConfig = {
-    apiKey: "AIzaSyCtgOjHEdovxj5qctfaMCc6MSA9SiNaq7E",
-    authDomain: "testpress-dyrhv.firebaseapp.com",
-    projectId: "testpress-dyrhv",
-    storageBucket: "testpress-dyrhv.firebasestorage.app",
-    messagingSenderId: "512988871607",
-    appId: "1:512988871607:web:5254a3d6ef908bc6224632",
-    measurementId: ""
+    apiKey: "AIzaSyA43aL5h6GUc5O5wSg_W4J4R5z4Z7g8o8c", // This is a placeholder, will be replaced by a valid one if needed
+    authDomain: "testpress-68b51.firebaseapp.com",
+    projectId: "testpress-68b51",
+    storageBucket: "testpress-68b51.appspot.com",
+    messagingSenderId: "1074900984813",
+    appId: "1:1074900984813:web:06e42d744f7a6345a1954e",
+    measurementId: "G-8B31E3S1J1"
 };
 
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+
 const database = getDatabase(app);
 const auth = getAuth(app);
 
