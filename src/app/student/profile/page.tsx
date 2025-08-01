@@ -12,9 +12,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { onAuthStateChanged, type User as FirebaseUser, updateProfile } from 'firebase/auth';
-import { auth, database } from '@/lib/firebase';
-import { useState, useEffect } from 'react';
+import { auth, database, storage } from '@/lib/firebase';
+import { useState, useEffect, useRef } from 'react';
 import { get, ref, update } from "firebase/database";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Upload } from "lucide-react";
 
@@ -28,6 +29,8 @@ export default function ProfilePage() {
     const { toast } = useToast();
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -84,6 +87,40 @@ export default function ProfilePage() {
             });
         }
     }
+
+     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0] && user) {
+            const file = event.target.files[0];
+            setUploading(true);
+            try {
+                const imageRef = storageRef(storage, `profile-pictures/${user.uid}`);
+                await uploadBytes(imageRef, file);
+                const photoURL = await getDownloadURL(imageRef);
+
+                await updateProfile(user, { photoURL });
+                
+                const userDbRef = ref(database, `users/${user.uid}`);
+                await update(userDbRef, { photoURL });
+
+                // Force re-render to show new photo
+                setUser({...user});
+
+                toast({
+                    title: "Photo Updated",
+                    description: "Your profile picture has been successfully updated.",
+                });
+
+            } catch (error: any) {
+                 toast({
+                    title: "Upload Failed",
+                    description: error.message,
+                    variant: "destructive",
+                });
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
     
     if (loading) {
         return <Skeleton className="h-96 w-full" />;
@@ -108,7 +145,16 @@ export default function ProfilePage() {
                         <AvatarFallback className="text-3xl">{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <Button variant="outline"><Upload className="mr-2 h-4 w-4"/> Change Photo</Button>
+                         <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*"
+                        />
+                        <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                            <Upload className="mr-2 h-4 w-4"/> {uploading ? 'Uploading...' : 'Change Photo'}
+                        </Button>
                         <p className="text-xs text-muted-foreground mt-2">JPG, GIF or PNG. 1MB max.</p>
                     </div>
                 </div>
