@@ -68,7 +68,7 @@ export default function LoginPage() {
           description: "Welcome back!",
         });
 
-        if (userData.role === 'instructor') {
+        if (userData.role === 'instructor' || userData.role === 'admin') {
           router.push("/admin");
         } else {
           router.push("/student/dashboard");

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Trash2, Edit, Users, BookOpen } from "lucide-react";
+import { PlusCircle, Trash2, Edit, Users, BookOpen, ShieldCheck } from "lucide-react";
 import { exams } from "@/lib/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
   return (
     <div>
         <header className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">Instructor Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-headline">Admin Dashboard</h1>
              <Link href="/admin/exams/new" passHref>
                 <Button>
                 <PlusCircle className="mr-2 h-4 w-4" /> Add New Exam
@@ -35,19 +35,31 @@ export default function AdminDashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-3xl font-bold">{exams.length}</p>
-                    <p className="text-xs text-muted-foreground">Exams created on the platform</p>
+                    <p className="text-xs text-muted-foreground">Exams on the platform</p>
                 </CardContent>
             </Card>
              <Card>
                 <CardHeader>
                     <div className="flex justify-between items-center">
-                        <CardTitle className="text-lg">Total Students</CardTitle>
+                        <CardTitle className="text-lg">Total Users</CardTitle>
                         <Users className="h-5 w-5 text-muted-foreground" />
                     </div>
                 </CardHeader>
                 <CardContent>
                     <p className="text-3xl font-bold">1250</p>
-                    <p className="text-xs text-muted-foreground">Students registered</p>
+                    <p className="text-xs text-muted-foreground">Students & Instructors</p>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <CardTitle className="text-lg">Admins</CardTitle>
+                        <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-3xl font-bold">2</p>
+                    <p className="text-xs text-muted-foreground">Platform administrators</p>
                 </CardContent>
             </Card>
         </div>

@@ -92,7 +92,7 @@ export default function ProfilePage() {
   return (
     <div>
         <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">Instructor Profile</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-headline">Admin Profile</h1>
             <p className="text-muted-foreground mt-1">Manage your account and personal information.</p>
         </header>
 

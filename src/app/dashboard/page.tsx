@@ -24,7 +24,7 @@ export default function DashboardPage() {
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
           const userData = snapshot.val();
-          if (userData.role === 'instructor') {
+          if (userData.role === 'instructor' || userData.role === 'admin') {
              router.push('/admin');
           } else {
              router.push('/student/dashboard');

@@ -11,21 +11,23 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-interface Student {
+interface User {
     uid: string;
     name: string;
     email: string;
+    role: 'student' | 'instructor' | 'admin';
     photoURL?: string;
 }
 
 export default function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchUsers = async () => {
       setLoading(true);
       const usersRef = ref(database, 'users');
       
@@ -33,50 +35,42 @@ export default function StudentsPage() {
         const snapshot = await get(usersRef);
         if (snapshot.exists()) {
           const allUsers = snapshot.val();
-          const studentsData: Student[] = [];
-          Object.keys(allUsers).forEach((uid) => {
-            const userData = allUsers[uid];
-            if (userData.role === 'student') {
-              studentsData.push({ 
-                uid: uid, 
-                name: userData.name,
-                email: userData.email,
-                photoURL: userData.photoURL
-              });
-            }
-          });
-          setStudents(studentsData);
+          const usersData: User[] = Object.keys(allUsers).map(uid => ({
+            uid,
+            ...allUsers[uid]
+          }));
+          setUsers(usersData);
         }
       } catch (error) {
-        console.error("Error fetching students:", error);
+        console.error("Error fetching users:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStudents();
+    fetchUsers();
   }, []);
 
-  const filteredStudents = students.filter(student => 
-    student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(user => 
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div>
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Student Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight font-headline">User Management</h1>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Students</CardTitle>
-          <CardDescription>View and manage all registered students on the platform.</CardDescription>
+          <CardTitle>All Users</CardTitle>
+          <CardDescription>View and manage all registered students, instructors, and admins.</CardDescription>
             <div className="relative mt-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                 type="text"
-                placeholder="Search students by name or email..."
+                placeholder="Search users by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 max-w-sm"
@@ -94,23 +88,29 @@ export default function StudentsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
+                  <TableHead>User</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.length > 0 ? (
-                  filteredStudents.map((student) => (
-                    <TableRow key={student.uid}>
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <TableRow key={user.uid}>
                       <TableCell className="font-medium flex items-center gap-3">
                         <Avatar>
-                            <AvatarImage src={student.photoURL} alt={student.name} />
-                            <AvatarFallback>{student.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarImage src={user.photoURL} alt={user.name} />
+                            <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        {student.name}
+                        {user.name}
                       </TableCell>
-                      <TableCell>{student.email}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                       <TableCell>
+                        <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'instructor' ? 'default' : 'secondary'}>
+                          {user.role}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right">
                          <Button variant="outline" size="sm">View Profile</Button>
                       </TableCell>
@@ -118,8 +118,8 @@ export default function StudentsPage() {
                   ))
                 ) : (
                    <TableRow>
-                        <TableCell colSpan={3} className="text-center py-16 text-muted-foreground">
-                            No students found.
+                        <TableCell colSpan={4} className="text-center py-16 text-muted-foreground">
+                            No users found.
                         </TableCell>
                     </TableRow>
                 )}

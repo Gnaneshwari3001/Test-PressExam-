@@ -2,7 +2,7 @@
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { User, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard } from 'lucide-react';
+import { User, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -31,7 +31,7 @@ export default function AdminDashboardLayout({
             if (currentUser) {
                 const userRef = ref(database, 'users/' + currentUser.uid);
                 const snapshot = await get(userRef);
-                if (snapshot.exists() && snapshot.val().role === 'instructor') {
+                if (snapshot.exists() && (snapshot.val().role === 'instructor' || snapshot.val().role === 'admin')) {
                     setUser(currentUser);
                 } else {
                     router.push('/login');
@@ -87,11 +87,11 @@ export default function AdminDashboardLayout({
 
     const menuItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
-        { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck, tooltip: "Manage Exams" },
-        { href: "/admin/students", label: "Students", icon: Users, tooltip: "Students" },
+        { href: "/admin/exams", label: "Exam Oversight", icon: BookOpenCheck, tooltip: "Exam Oversight" },
+        { href: "/admin/students", label: "User Management", icon: Users, tooltip: "User Management" },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
-        { href: "/admin/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" },
-        { href: "/admin/profile", label: "Profile", icon: User, tooltip: "Profile" },
+        { href: "/admin/notifications", label: "Announcements", icon: Bell, tooltip: "Announcements" },
+        { href: "/admin/profile", label: "Admin Profile", icon: ShieldCheck, tooltip: "Admin Profile" },
     ];
 
     return (
