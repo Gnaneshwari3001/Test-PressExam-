@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -10,10 +11,10 @@ import { BookOpenCheck, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const recentResults = [
-  { id: 1, exam: "Introduction to Algebra", score: 85, date: "2023-10-26" },
-  { id: 2, exam: "Basics of Physics", score: 92, date: "2023-10-24" },
-  { id: 3, exam: "World War II", score: 78, date: "2023-10-22" },
-  { id: 4, exam: "World Capitals", score: 95, date: "2023-10-20" },
+  { id: "math-101", exam: "Introduction to Algebra", score: 85, date: "2023-10-26" },
+  { id: "science-101", exam: "Basics of Physics", score: 92, date: "2023-10-24" },
+  { id: "history-201", exam: "World War II", score: 78, date: "2023-10-22" },
+  { id: "geography-101", exam: "World Capitals", score: 95, date: "2023-10-20" },
 ];
 
 const chartData = [

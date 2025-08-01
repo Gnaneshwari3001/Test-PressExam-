@@ -44,14 +44,14 @@ export default function NotificationsPage() {
   return (
     <div>
         <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">Notifications</h1>
-            <p className="text-muted-foreground mt-1">Send announcements and alerts to all students.</p>
+            <h1 className="text-3xl font-bold tracking-tight font-headline">Announcements & Queries</h1>
+            <p className="text-muted-foreground mt-1">Send announcements to all students and view incoming queries.</p>
         </header>
 
         <div className="grid gap-12 md:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Send />Compose New Notification</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><Send />Compose New Announcement</CardTitle>
                     <CardDescription>The message will be broadcast to all registered students.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -83,15 +83,15 @@ export default function NotificationsPage() {
                                 </FormItem>
                             )}
                             />
-                            <Button type="submit" className="w-full">Send Notification</Button>
+                            <Button type="submit" className="w-full">Send Announcement</Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
              <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><History />Sent History</CardTitle>
-                     <CardDescription>A log of previously sent notifications.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><History />Activity Log</CardTitle>
+                     <CardDescription>A log of previously sent announcements and received queries.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {recentNotifications.map(notification => (
@@ -103,6 +103,13 @@ export default function NotificationsPage() {
                             <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
                         </div>
                     ))}
+                     <div className="p-4 border rounded-lg bg-secondary/30">
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-semibold">Query: Issue with Algebra Score</h3>
+                            <p className="text-xs text-muted-foreground">From: student@example.com</p>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">"Hello, I believe there was an error in the grading of my recent Algebra exam. Can someone please review it?"</p>
+                    </div>
                 </CardContent>
             </Card>
         </div>

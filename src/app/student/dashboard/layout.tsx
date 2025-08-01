@@ -141,6 +141,7 @@ export default function StudentDashboardLayout({
                     <div className="md:hidden">
                        <SidebarTrigger/>
                     </div>
+                     <h2 className="font-bold text-lg hidden md:block">Student Panel</h2>
                     <div className="flex-1" />
                     <ThemeToggle />
                 </header>
