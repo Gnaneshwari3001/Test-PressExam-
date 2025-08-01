@@ -3,34 +3,61 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileWarning, CircleDollarSign, HelpCircle } from "lucide-react";
+import { FileWarning, CircleDollarSign, HelpCircle, QrCode } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const pendingDues = [
-    { id: "due_1", dueDate: "2023-12-15", description: "Spring Semester - Tuition Fee", amount: "$1200.00", status: "Upcoming" },
-    { id: "due_2", dueDate: "2023-11-30", description: "Final Exam Fee", amount: "$50.00", status: "Due" },
+    { id: "due_1", dueDate: "2023-12-15", description: "Spring Semester - Tuition Fee", amount: 1200.00, status: "Upcoming" },
+    { id: "due_2", dueDate: "2023-11-30", description: "Final Exam Fee", amount: 50.00, status: "Due" },
 ];
+
+interface Due {
+    id: string;
+    dueDate: string;
+    description: string;
+    amount: number;
+    status: string;
+}
 
 export default function DuesPage() {
     const { toast } = useToast();
     const router = useRouter();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDue, setSelectedDue] = useState<Due | null>(null);
+    const [paymentAmount, setPaymentAmount] = useState("");
 
-    const handlePayNow = (dueId: string) => {
+    const handlePayClick = (due: Due) => {
+        setSelectedDue(due);
+        setPaymentAmount(due.amount.toFixed(2));
+        setIsModalOpen(true);
+    }
+
+    const handleConfirmPayment = () => {
+        if (!selectedDue || !paymentAmount) return;
+
+        console.log(`Processing payment of $${paymentAmount} for ${selectedDue.description}`);
         toast({
-            title: "Redirecting to Payment Gateway...",
-            description: `You are being redirected to complete your payment for ${dueId}.`,
+            title: "Payment Successful!",
+            description: `Your payment of $${paymentAmount} has been processed.`,
         });
-        // In a real application, you would redirect to an actual payment gateway URL.
-        // For this demo, we'll redirect to the payments history page.
-        router.push('/student/payments');
+        setIsModalOpen(false);
+        setSelectedDue(null);
+        setPaymentAmount("");
     }
 
     const handleRequestExtension = (dueDescription: string) => {
         router.push(`/student/query?subject=Extension Request: ${dueDescription}`);
     }
+
+    const totalDue = pendingDues.reduce((sum, due) => sum + due.amount, 0);
 
   return (
     <div>
@@ -59,12 +86,12 @@ export default function DuesPage() {
                     <TableRow key={due.id}>
                         <TableCell>{due.dueDate}</TableCell>
                         <TableCell className="font-medium">{due.description}</TableCell>
-                        <TableCell>{due.amount}</TableCell>
+                        <TableCell>${due.amount.toFixed(2)}</TableCell>
                         <TableCell>
                             <Badge variant={due.status === 'Due' ? 'destructive' : 'secondary'}>{due.status}</Badge>
                         </TableCell>
                         <TableCell className="text-right space-x-2">
-                           <Button size="sm" onClick={() => handlePayNow(due.id)}>
+                           <Button size="sm" onClick={() => handlePayClick(due)}>
                                <CircleDollarSign className="mr-2 h-4 w-4"/> Pay Now
                            </Button>
                            <Button size="sm" variant="outline" onClick={() => handleRequestExtension(due.description)}>
@@ -77,9 +104,46 @@ export default function DuesPage() {
             </Table>
         </CardContent>
          <CardFooter className="flex justify-end font-bold text-lg">
-            Total Due: $1250.00
+            Total Due: ${totalDue.toFixed(2)}
         </CardFooter>
       </Card>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><QrCode/> Scan to Pay</DialogTitle>
+            <DialogDescription>
+              Scan the QR code with your payment app to complete the transaction for '{selectedDue?.description}'.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+              <Image 
+                src="https://placehold.co/250x250.png" 
+                alt="QR Code" 
+                width={250} 
+                height={250}
+                data-ai-hint="qr code"
+              />
+              <div className="w-full">
+                <Label htmlFor="amount" className="text-right mb-2">
+                  Amount to Pay
+                </Label>
+                <Input 
+                  id="amount" 
+                  value={paymentAmount} 
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  className="col-span-3" 
+                />
+              </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleConfirmPayment}>Confirm Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
