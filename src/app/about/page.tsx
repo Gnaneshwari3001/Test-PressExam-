@@ -26,14 +26,6 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="flex justify-center">
-            <Image 
-              src="https://placehold.co/500x300.png"
-              alt="Our Mission"
-              width={500}
-              height={300}
-              data-ai-hint="team working"
-              className="rounded-lg shadow-lg"
-            />
           </div>
         </div>
       </section>

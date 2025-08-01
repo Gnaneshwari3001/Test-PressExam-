@@ -12,40 +12,30 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10 dark:bg-primary/5">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10 dark:bg-primary/5 animate-fade-in-down">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Test Your Knowledge – Take Exams Online
-                  </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Welcome to TestPress, your premier destination for online examinations. Sharpen your skills, prepare for success, and achieve your goals.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/exams">
-                    <Button size="lg" className="bg-accent hover:bg-accent/90">Start Exam</Button>
-                  </Link>
-                  <Link href="/dashboard">
-                    <Button size="lg" variant="outline">Go to Dashboard</Button>
-                  </Link>
-                </div>
+            <div className="flex flex-col justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
+                  Test Your Knowledge – Take Exams Online
+                </h1>
+                <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
+                  Welcome to TestPress, your premier destination for online examinations. Sharpen your skills, prepare for success, and achieve your goals.
+                </p>
               </div>
-              <Image
-                src="https://placehold.co/600x400.png"
-                width="600"
-                height="400"
-                alt="Hero"
-                data-ai-hint="student studying"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              />
+              <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
+                <Link href="/exams">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90">Start Exam</Button>
+                </Link>
+                <Link href="/dashboard">
+                  <Button size="lg" variant="outline">Go to Dashboard</Button>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32 animate-fade-in-up">
           <div className="container px-4 md:px-6">
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
               <div className="flex flex-col items-center text-center p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -67,7 +57,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50 dark:bg-background">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50 dark:bg-background animate-fade-in-up animation-delay-200">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 font-headline">
               Featured Exams
@@ -85,7 +75,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32 animate-fade-in-up animation-delay-400">
           <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">What Our Students Say</h2>
@@ -97,7 +87,6 @@ export default function Home() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="happy student" />
                     <div>
                       <CardTitle>Sarah L.</CardTitle>
                       <div className="flex text-yellow-400">
@@ -113,7 +102,6 @@ export default function Home() {
                <Card>
                 <CardHeader>
                    <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="smiling student" />
                     <div>
                       <CardTitle>Mike P.</CardTitle>
                       <div className="flex text-yellow-400">
@@ -129,7 +117,6 @@ export default function Home() {
               <Card>
                 <CardHeader>
                    <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/48x48.png" alt="Avatar" width={48} height={48} className="rounded-full" data-ai-hint="professional teacher" />
                     <div>
                       <CardTitle>Jessica T.</CardTitle>
                       <div className="flex text-yellow-400">

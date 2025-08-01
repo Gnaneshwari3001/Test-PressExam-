@@ -88,12 +88,52 @@ export default {
             height: '0',
           },
         },
+        'fade-in-down': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-20px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        },
+        'fade-in-up': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(20px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in-down': 'fade-in-down 0.5s ease-out',
+        'fade-in-up': 'fade-in-up 0.5s ease-out',
+      },
+      animationDelay: {
+        '200': '200ms',
+        '400': '400ms',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function({ addUtilities }) {
+      addUtilities({
+        '.animation-delay-200': {
+          'animation-fill-mode': 'both',
+          'animation-delay': '200ms',
+        },
+        '.animation-delay-400': {
+          'animation-fill-mode': 'both',
+          'animation-delay': '400ms',
+        },
+      })
+    }
+  ],
 } satisfies Config;

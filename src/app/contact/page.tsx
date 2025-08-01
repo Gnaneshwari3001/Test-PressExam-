@@ -150,7 +150,6 @@ export default function ContactPage() {
             </CardHeader>
             <CardContent>
                 <div className="aspect-video w-full rounded-md overflow-hidden">
-                    <Image src="https://placehold.co/600x400.png" alt="Map" width={600} height={400} data-ai-hint="world map" className="object-cover w-full h-full" />
                 </div>
             </CardContent>
           </Card>
