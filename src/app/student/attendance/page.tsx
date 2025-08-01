@@ -8,8 +8,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Check, X, Plane, Info } from "lucide-react";
-import { format, parseISO, startOfDay } from "date-fns";
+import { Check, X, Plane, Info, Calendar as CalendarIcon } from "lucide-react";
+import { format, parseISO, startOfDay, getDay } from "date-fns";
 
 type AttendanceStatus = "Present" | "Absent" | "Leave";
 
@@ -44,7 +44,7 @@ const attendanceLog: DailyRecord[] = [
     { date: "2024-07-01", status: "Present" },
     { date: "2024-07-02", status: "Present" },
     { date: "2024-07-03", status: "Present" },
-    { date: "2024-07-04", status: "Leave", reason: "Public Holiday" },
+    { date: "2024-07-04", status: "Leave", reason: "Independence Day" },
     { date: "2024-07-05", status: "Present" },
     { date: "2024-07-08", status: "Present" },
     { date: "2024-07-09", status: "Present" },
@@ -70,14 +70,26 @@ export default function AttendancePage() {
   const leaves = useMemo(() => attendanceLog.filter(log => log.status === "Leave"), []);
   const absences = useMemo(() => attendanceLog.filter(log => log.status === "Absent"), []);
 
-  const selectedDayRecord = useMemo(() => {
-    if (!date) return null;
-    const selectedDayStart = startOfDay(date);
-    return attendanceLog.find(log => startOfDay(parseISO(log.date)).getTime() === selectedDayStart.getTime());
-  }, [date]);
-  
+  const getStatusForDate = (selectedDate: Date | undefined): { status: string; reason?: string } => {
+    if (!selectedDate) return { status: 'No date selected' };
+    
+    const selectedDayStart = startOfDay(selectedDate);
+    const record = attendanceLog.find(log => startOfDay(parseISO(log.date)).getTime() === selectedDayStart.getTime());
 
-  const getStatusIcon = (status: AttendanceStatus) => {
+    if (record) {
+        return { status: record.status, reason: record.reason };
+    }
+
+    if (getDay(selectedDayStart) === 0) { // Sunday
+        return { status: 'Sunday' };
+    }
+
+    return { status: 'Working Day' };
+  };
+
+  const selectedDayInfo = getStatusForDate(date);
+  
+  const getStatusIcon = (status: string) => {
     switch (status) {
         case "Present":
             return <Check className="h-8 w-8 text-green-500" />;
@@ -85,6 +97,8 @@ export default function AttendancePage() {
             return <X className="h-8 w-8 text-red-500" />;
         case "Leave":
             return <Plane className="h-8 w-8 text-blue-500" />;
+        case "Sunday":
+            return <CalendarIcon className="h-8 w-8 text-muted-foreground" />;
         default:
             return <Info className="h-8 w-8 text-muted-foreground" />;
     }
@@ -142,7 +156,7 @@ export default function AttendancePage() {
                         <TableBody>
                             {absences.map((absence, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{format(new Date(absence.date), "PPP")}</TableCell>
+                                    <TableCell>{format(parseISO(absence.date), "PPP")}</TableCell>
                                     <TableCell className="font-medium">{absence.reason}</TableCell>
                                 </TableRow>
                             ))}
@@ -181,7 +195,7 @@ export default function AttendancePage() {
                         <TableBody>
                             {leaves.map((leave, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{format(new Date(leave.date), "PPP")}</TableCell>
+                                    <TableCell>{format(parseISO(leave.date), "PPP")}</TableCell>
                                     <TableCell className="font-medium">{leave.reason}</TableCell>
                                 </TableRow>
                             ))}
@@ -220,18 +234,18 @@ export default function AttendancePage() {
                         <CardDescription>Your attendance status for the selected day.</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center h-full gap-4">
-                        {selectedDayRecord ? (
+                        {selectedDayInfo.status ? (
                             <>
-                                {getStatusIcon(selectedDayRecord.status)}
+                                {getStatusIcon(selectedDayInfo.status)}
                                 <Badge variant={
-                                    selectedDayRecord.status === 'Present' ? 'default' : 
-                                    selectedDayRecord.status === 'Absent' ? 'destructive' : 'secondary'
-                                } className="text-xl px-4 py-2">
-                                    {selectedDayRecord.status}
+                                    selectedDayInfo.status === 'Present' ? 'default' : 
+                                    selectedDayInfo.status === 'Absent' ? 'destructive' : 'secondary'
+                                } className="text-xl px-4 py-2 capitalize">
+                                    {selectedDayInfo.status}
                                 </Badge>
-                                {selectedDayRecord.reason && (
+                                {selectedDayInfo.reason && (
                                     <p className="text-muted-foreground text-center">
-                                        <strong>Reason:</strong> {selectedDayRecord.reason}
+                                        <strong>Reason:</strong> {selectedDayInfo.reason}
                                     </p>
                                 )}
                             </>
@@ -239,7 +253,6 @@ export default function AttendancePage() {
                              <div className="text-center text-muted-foreground">
                                 <Info className="h-8 w-8 mx-auto mb-2" />
                                 <p>No record found for this day.</p>
-                                <p className="text-xs">(It might be a holiday or a non-working day)</p>
                              </div>
                         )}
                     </CardContent>
@@ -249,3 +262,4 @@ export default function AttendancePage() {
     </div>
   );
 }
+
