@@ -6,7 +6,7 @@ export const exams: Exam[] = [
     title: "Introduction to Algebra",
     subject: "Mathematics",
     duration: 60,
-    questionCount: 20,
+    questionCount: 5,
     level: "Beginner",
     questions: [
       { id: 1, question: "What is 2 + 2?", options: ["3", "4", "5", "6"], correctAnswer: "4" },
@@ -21,7 +21,7 @@ export const exams: Exam[] = [
     title: "Basics of Physics",
     subject: "Science",
     duration: 45,
-    questionCount: 15,
+    questionCount: 3,
     level: "Beginner",
     questions: [
       { id: 1, question: "What is the formula for force?", options: ["E=mc^2", "F=ma", "a^2+b^2=c^2", "PV=nRT"], correctAnswer: "F=ma" },
@@ -34,7 +34,7 @@ export const exams: Exam[] = [
     title: "World War II",
     subject: "History",
     duration: 75,
-    questionCount: 25,
+    questionCount: 2,
     level: "Intermediate",
     questions: [
       { id: 1, question: "When did World War II start?", options: ["1935", "1939", "1941", "1945"], correctAnswer: "1939" },
@@ -46,7 +46,7 @@ export const exams: Exam[] = [
     title: "Shakespearean Tragedies",
     subject: "Literature",
     duration: 90,
-    questionCount: 30,
+    questionCount: 1,
     level: "Advanced",
     questions: [
       { id: 1, question: "Which of these is NOT a tragedy by Shakespeare?", options: ["Hamlet", "Macbeth", "A Midsummer Night's Dream", "Othello"], correctAnswer: "A Midsummer Night's Dream" },
@@ -57,7 +57,7 @@ export const exams: Exam[] = [
     title: "World Capitals",
     subject: "Geography",
     duration: 30,
-    questionCount: 20,
+    questionCount: 2,
     level: "Beginner",
     questions: [
       { id: 1, question: "What is the capital of France?", options: ["London", "Berlin", "Paris", "Madrid"], correctAnswer: "Paris" },
@@ -69,11 +69,49 @@ export const exams: Exam[] = [
     title: "Data Structures & Algorithms",
     subject: "Computer Science",
     duration: 120,
-    questionCount: 40,
+    questionCount: 2,
     level: "Advanced",
     questions: [
       { id: 1, question: "Which data structure uses LIFO?", options: ["Queue", "Stack", "Array", "Linked List"], correctAnswer: "Stack" },
       { id: 2, question: "What is the time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], correctAnswer: "O(log n)" },
+    ],
+  },
+  {
+    id: "aptitude-101",
+    title: "Quantitative Aptitude Basics",
+    subject: "Aptitude",
+    duration: 60,
+    questionCount: 3,
+    level: "Intermediate",
+    questions: [
+      { id: 1, question: "A man buys a cycle for $1400 and sells it at a loss of 15%. What is the selling price of the cycle?", options: ["$1190", "$1200", "$1160", "$1000"], correctAnswer: "$1190" },
+      { id: 2, question: "The sum of ages of 5 children born at the intervals of 3 years each is 50 years. What is the age of the youngest child?", options: ["4 years", "8 years", "10 years", "None of these"], correctAnswer: "4 years" },
+      { id: 3, question: "A train running at the speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?", options: ["120 metres", "180 metres", "324 metres", "150 metres"], correctAnswer: "150 metres" },
+    ],
+  },
+  {
+    id: "reasoning-101",
+    title: "Logical Reasoning",
+    subject: "Reasoning",
+    duration: 45,
+    questionCount: 3,
+    level: "Intermediate",
+    questions: [
+      { id: 1, question: "Look at this series: 7, 10, 8, 11, 9, 12, ... What number should come next?", options: ["7", "10", "12", "13"], correctAnswer: "10" },
+      { id: 2, question: "CUP : LIP :: BIRD : ?", options: ["BUSH", "GRASS", "FOREST", "BEAK"], correctAnswer: "BEAK" },
+      { id: 3, question: "Which word does NOT belong with the others?", options: ["unimportant", "trivial", "insignificant", "familiar"], correctAnswer: "familiar" },
+    ],
+  },
+  {
+    id: "cs-301",
+    title: "Object-Oriented Programming",
+    subject: "Computer Science",
+    duration: 75,
+    questionCount: 2,
+    level: "Advanced",
+    questions: [
+      { id: 1, question: "Which of the following is not an OOPS concept?", options: ["Encapsulation", "Polymorphism", "Inheritance", "Compilation"], correctAnswer: "Compilation" },
+      { id: 2, question: "Which concept allows you to define a new class from an existing class?", options: ["Encapsulation", "Inheritance", "Abstraction", "Polymorphism"], correctAnswer: "Inheritance" },
     ],
   },
 ];

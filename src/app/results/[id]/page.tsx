@@ -133,9 +133,9 @@ export default function ResultsPage() {
                     </ResponsiveContainer>
                 </div>
             </CardContent>
-            <CardFooter>
+            <CardDescription className="p-6 pt-0">
                 <Button className="w-full" onClick={() => window.print()}><Download className="mr-2 h-4 w-4"/> Download Scorecard</Button>
-            </CardFooter>
+            </CardDescription>
           </Card>
           
           <Card>
@@ -176,13 +176,16 @@ export default function ResultsPage() {
                             return (
                                 <div key={q.id} className="p-4 rounded-md border">
                                     <p className="font-medium">{index+1}. {q.question}</p>
-                                    <p className={`mt-2 text-sm flex items-center gap-2 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                                        {isCorrect ? <CheckCircle className="h-4 w-4"/> : <XCircle className="h-4 w-4" />}
-                                        Your answer: {userAnswer || <Badge variant="destructive">Not Answered</Badge>}
-                                    </p>
-                                    {!isCorrect && (
-                                        <p className="mt-1 text-sm text-green-700 dark:text-green-500">Correct answer: {q.correctAnswer}</p>
-                                    )}
+                                    <div className="mt-2 space-y-2">
+                                        <p className={`text-sm flex items-center gap-2 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                                            {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0"/> : <XCircle className="h-4 w-4 shrink-0" />}
+                                            <span>Your answer: {userAnswer || <Badge variant="destructive">Not Answered</Badge>}</span>
+                                        </p>
+                                        <p className="text-sm flex items-center gap-2 text-primary">
+                                            <CheckCircle className="h-4 w-4 shrink-0"/> 
+                                            <span>Correct answer: {q.correctAnswer}</span>
+                                        </p>
+                                    </div>
                                 </div>
                             )
                         })}
