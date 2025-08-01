@@ -2,7 +2,7 @@
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { User, Book, BookOpenCheck, CalendarCheck, ClipboardList, GraduationCap, Banknote, FileWarning, FolderKanban, Award, FileText, HelpCircle, LogOut } from 'lucide-react';
+import { User, Book, BookOpenCheck, CalendarCheck, ClipboardList, GraduationCap, Banknote, FileWarning, FolderKanban, Award, FileText, HelpCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -79,7 +79,7 @@ export default function StudentDashboardLayout({
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
     const menuItems = [
-        { href: "/student/dashboard", label: "Dashboard", icon: User, tooltip: "Dashboard" },
+        { href: "/student/dashboard", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
         { href: "/student/profile", label: "Profile Info", icon: User, tooltip: "Profile Info" },
         { href: "/student/subjects", label: "Subjects", icon: Book, tooltip: "Subjects" },
         { href: "/exams", label: "Exams", icon: BookOpenCheck, tooltip: "Exams" },
