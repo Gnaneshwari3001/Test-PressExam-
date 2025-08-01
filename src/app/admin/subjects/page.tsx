@@ -24,104 +24,269 @@ const subjects = [
 const getSubjectContent = (subjectName: string): string => {
     const contentMap: { [key: string]: string } = {
         "Data Structures": `
-Data Structures - Key Concepts
-1. Arrays: Fixed-size, indexed collections. O(1) access.
-2. Linked Lists: Dynamic size, sequential access. Singly vs. Doubly.
-3. Stacks: Last-In, First-Out (LIFO). Operations: push, pop, peek.
-4. Queues: First-In, First-Out (FIFO). Operations: enqueue, dequeue.
-5. Trees: Hierarchical structure. Binary Trees, BSTs, AVL Trees.
-6. Graphs: Nodes and edges. Directed vs. Undirected. Traversal: BFS, DFS.
-7. Hash Tables: Key-value pairs. O(1) average access. Handle collisions.
+Data Structures - Detailed Study Guide
+
+Topic 1: Introduction to Data Structures
+- Definition: A data structure is a specialized format for organizing, processing, retrieving, and storing data.
+- Importance: Efficient data management, foundation for complex algorithms.
+- Types: Linear (Arrays, Linked Lists, Stacks, Queues) and Non-Linear (Trees, Graphs).
+
+Topic 2: Arrays
+- Concept: A collection of items stored at contiguous memory locations.
+- Characteristics: Fixed size, O(1) random access by index.
+- Operations: Traversal (O(n)), Insertion (O(n)), Deletion (O(n)), Search (O(n) for unsorted, O(log n) for sorted).
+
+Topic 3: Linked Lists
+- Concept: A linear data structure where elements are not stored at contiguous memory locations. Elements are linked using pointers.
+- Types:
+  - Singly Linked List: Each node points to the next node.
+  - Doubly Linked List: Each node points to the next and previous nodes.
+  - Circular Linked List: The last node points back to the first node.
+- Operations: Insertion/Deletion at beginning (O(1)), at end (O(n) for singly, O(1) with tail pointer), in middle (O(n)).
+
+Topic 4: Stacks
+- Concept: Follows the Last-In, First-Out (LIFO) principle.
+- Analogy: A stack of plates.
+- Operations:
+  - push: Add an item to the top. (O(1))
+  - pop: Remove an item from the top. (O(1))
+  - peek/top: View the top item without removing it. (O(1))
+- Applications: Function calls (call stack), undo/redo functionality, expression evaluation.
+
+Topic 5: Queues
+- Concept: Follows the First-In, First-Out (FIFO) principle.
+- Analogy: A checkout line.
+- Operations:
+  - enqueue: Add an item to the rear. (O(1))
+  - dequeue: Remove an item from the front. (O(1))
+- Applications: Task scheduling, print job queuing, breadth-first search.
+
+Topic 6: Trees
+- Concept: A hierarchical data structure with a root value and subtrees of children with a parent node.
+- Key Types:
+  - Binary Tree: Each node has at most two children.
+  - Binary Search Tree (BST): Left child is smaller, right child is larger. Provides O(log n) average search/insert/delete.
+  - AVL Tree / Red-Black Tree: Self-balancing BSTs to guarantee O(log n) worst-case performance.
+- Traversal Methods: In-order, Pre-order, Post-order.
+
+Topic 7: Graphs
+- Concept: A set of nodes (vertices) connected by edges. Can be directed or undirected.
+- Representation: Adjacency Matrix, Adjacency List.
+- Traversal Algorithms:
+  - Breadth-First Search (BFS): Explores neighbor nodes first. Uses a queue.
+  - Depth-First Search (DFS): Explores as far as possible along each branch before backtracking. Uses a stack.
+
+Topic 8: Hash Tables
+- Concept: A data structure that maps keys to values using a hash function.
+- Goal: Provides O(1) average time complexity for insertion, deletion, and search.
+- Collision Handling:
+  - Chaining: Each bucket stores a linked list of elements that hash to the same index.
+  - Open Addressing: Find the next open slot in the table (e.g., linear probing).
 `,
         "Algorithms": `
-Algorithms - Key Concepts
-1. Sorting: Bubble, Selection, Insertion, Merge Sort, QuickSort. Know their time/space complexities.
-2. Searching: Linear Search, Binary Search (requires sorted data).
-3. Recursion: A function that calls itself. Base case is crucial.
-4. Divide and Conquer: Break problem into subproblems (e.g., Merge Sort).
-5. Greedy Algorithms: Make locally optimal choices (e.g., Dijkstra's, Kruskal's).
-6. Dynamic Programming: Solve overlapping subproblems (e.g., Fibonacci sequence, Knapsack).
-7. Big O Notation: Describes the upper bound of an algorithm's complexity.
+Algorithms - Detailed Study Guide
+
+Topic 1: Introduction to Algorithms
+- Definition: A step-by-step procedure for solving a problem or accomplishing a task.
+- Key Properties: Correctness, Efficiency, Finiteness.
+- Algorithm Analysis: Analyzing time complexity (how long it takes) and space complexity (how much memory it uses).
+
+Topic 2: Big O Notation
+- Concept: Describes the limiting behavior of a function when the argument tends towards a particular value or infinity. It characterizes performance as the input size grows.
+- Common Complexities:
+  - O(1): Constant time (e.g., accessing an array element).
+  - O(log n): Logarithmic time (e.g., binary search).
+  - O(n): Linear time (e.g., iterating through a list).
+  - O(n log n): Log-linear time (e.g., efficient sorting algorithms).
+  - O(n^2): Quadratic time (e.g., simple sorting algorithms).
+  - O(2^n): Exponential time (e.g., recursive Fibonacci).
+
+Topic 3: Sorting Algorithms
+- Bubble Sort: Repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. (O(n^2))
+- Selection Sort: Repeatedly finds the minimum element from the unsorted part and puts it at the beginning. (O(n^2))
+- Insertion Sort: Builds the final sorted array one item at a time. Efficient for small or nearly sorted datasets. (O(n^2))
+- Merge Sort: A divide-and-conquer algorithm. Divides the array into halves, sorts them, and then merges them. Stable and efficient. (O(n log n))
+- QuickSort: Another divide-and-conquer algorithm. Picks a 'pivot' element and partitions the other elements into two sub-arrays. (O(n log n) average, O(n^2) worst-case).
+
+Topic 4: Searching Algorithms
+- Linear Search: Sequentially checks each element of the list until a match is found or the whole list has been searched. (O(n))
+- Binary Search: Efficiently finds an item in a **sorted** array by repeatedly dividing the search interval in half. (O(log n))
+
+Topic 5: Algorithm Design Paradigms
+- Divide and Conquer: Break the problem into smaller subproblems of the same type, solve them recursively, and combine the solutions. (e.g., Merge Sort, QuickSort).
+- Greedy Algorithms: At each step, make the choice that seems best at the moment (the locally optimal choice) in the hope that this will lead to a globally optimal solution. (e.g., Dijkstra's, Kruskal's, Prim's).
+- Dynamic Programming: Solve complex problems by breaking them down into simpler, overlapping subproblems. It stores the results of subproblems to avoid re-computation. (e.g., Fibonacci sequence, Knapsack problem).
+- Backtracking: A general algorithm for finding all (or some) solutions to some computational problems, that incrementally builds candidates to the solutions.
+
+Topic 6: Graph Algorithms
+- Shortest Path (Single Source):
+  - Dijkstra's Algorithm: For graphs with non-negative edge weights.
+  - Bellman-Ford Algorithm: For graphs with negative edge weights.
+- Minimum Spanning Tree (MST): A subset of the edges of a connected, edge-weighted undirected graph that connects all the vertices together, without any cycles and with the minimum possible total edge weight.
+  - Kruskal's Algorithm: A greedy algorithm that adds edges in increasing order of weight.
+  - Prim's Algorithm: A greedy algorithm that grows the MST from a single vertex.
 `,
         "Operating Systems": `
-Operating Systems - Key Concepts
-1. Processes & Threads: Process is a program in execution. Threads are lightweight processes.
-2. Scheduling: CPU scheduling algorithms (FCFS, SJF, Round Robin).
-3. Memory Management: Paging, Segmentation, Virtual Memory.
-4. Concurrency: Deadlocks, Mutexes, Semaphores.
-5. File Systems: FAT, NTFS, ext4. How files are stored and managed.
+Operating Systems - Detailed Study Guide
+
+Topic 1: Introduction
+- Definition: Software that manages computer hardware and software resources and provides common services for computer programs.
+- Core Functions: Process Management, Memory Management, File System Management, I/O Device Management, Security.
+
+Topic 2: Processes and Threads
+- Process: A program in execution. It has its own address space.
+- Thread: A lightweight process. A basic unit of CPU utilization. Threads of the same process share the same address space.
+- Process State: New, Ready, Running, Waiting, Terminated.
+
+Topic 3: CPU Scheduling
+- Goal: To maximize CPU utilization and throughput.
+- Scheduling Algorithms:
+  - First-Come, First-Served (FCFS): Non-preemptive. Simple but can lead to long waiting times.
+  - Shortest-Job-First (SJF): Can be preemptive or non-preemptive. Optimal in terms of average waiting time, but hard to predict the length of the next CPU burst.
+  - Round Robin (RR): Preemptive. Each process gets a small unit of CPU time (time quantum). Good for time-sharing systems.
+  - Priority Scheduling: Assigns a priority to each process.
+
+Topic 4: Memory Management
+- Concept: Managing the computer's primary memory (RAM).
+- Techniques:
+  - Paging: Memory is divided into fixed-size blocks called pages. Allows a process's physical address space to be non-contiguous.
+  - Segmentation: Memory is divided into variable-sized blocks called segments based on logical divisions (e.g., code, data, stack).
+  - Virtual Memory: A technique that allows the execution of processes that are not completely in memory. Enables a larger logical address space than the physical address space.
+
+Topic 5: Concurrency and Synchronization
+- Race Condition: A situation where the result of a computation depends on the sequence or timing of uncontrollable events.
+- Critical Section: A piece of code that accesses a shared resource.
+- Synchronization Primitives:
+  - Mutex (Mutual Exclusion): A lock that ensures only one thread can access a resource at a time.
+  - Semaphore: A signaling mechanism that can be used to control access to a shared resource by multiple processes.
+- Deadlock: A situation where two or more processes are blocked forever, waiting for each other. Conditions: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait.
+
+Topic 6: File Systems
+- Concept: How data is stored and retrieved on a storage device.
+- File: A collection of related information.
+- Directory: A structure that holds references to files and other directories.
+- Common File Systems: FAT32, NTFS (Windows), ext4 (Linux), APFS (macOS).
 `,
         "Computer Networks": `
-Computer Networks - Key Concepts
-1. OSI Model: 7 layers (Physical, Data Link, Network, Transport, Session, Presentation, Application).
-2. TCP/IP Model: 4 layers (Link, Internet, Transport, Application).
-3. IP Addressing: IPv4 vs. IPv6. Subnetting.
-4. Protocols: HTTP, HTTPS, TCP, UDP, FTP, DNS.
-5. Routing: How packets are forwarded between networks.
+Computer Networks - Detailed Study Guide
+
+Topic 1: Introduction to Networks
+- Definition: A collection of computers and devices interconnected by communication channels that facilitate communications among users and allows users to share resources.
+- Types: LAN (Local Area Network), WAN (Wide Area Network), MAN (Metropolitan Area Network).
+
+Topic 2: Network Models
+- OSI Model (Open Systems Interconnection): A conceptual framework with 7 layers.
+  1. Physical: Transmission of raw bits.
+  2. Data Link: Node-to-node data transfer (MAC addresses).
+  3. Network: Logical addressing and routing (IP addresses).
+  4. Transport: End-to-end communication, reliability, flow control (TCP, UDP).
+  5. Session: Manages sessions between applications.
+  6. Presentation: Data translation, encryption, compression.
+  7. Application: Network services to applications (HTTP, FTP, SMTP).
+- TCP/IP Model: A more practical, 4-layer model.
+  1. Link Layer (Network Interface)
+  2. Internet Layer (IP)
+  3. Transport Layer (TCP, UDP)
+  4. Application Layer
+
+Topic 3: IP Addressing
+- IPv4: A 32-bit address, written as four octets in decimal (e.g., 192.168.1.1).
+- IPv6: A 128-bit address, designed to replace IPv4.
+- Subnetting: Dividing a single large network into smaller logical networks (subnets).
+
+Topic 4: Transport Layer Protocols
+- TCP (Transmission Control Protocol): Connection-oriented, reliable, ordered data delivery. Uses a three-way handshake to establish a connection.
+- UDP (User Datagram Protocol): Connectionless, unreliable, "best-effort" delivery. Faster but does not guarantee delivery. Used for real-time applications like streaming or gaming.
+
+Topic 5: Application Layer Protocols
+- HTTP (HyperText Transfer Protocol): The foundation of data communication for the World Wide Web.
+- HTTPS: Secure version of HTTP, encrypted using SSL/TLS.
+- DNS (Domain Name System): Translates human-readable domain names (e.g., www.google.com) to machine-readable IP addresses.
+- FTP (File Transfer Protocol): Used to transfer files between a client and a server.
+- SMTP (Simple Mail Transfer Protocol): Used for sending email.
+
+Topic 6: Routing
+- Concept: The process of selecting a path for traffic in a network, or between or across multiple networks.
+- Routing Protocols: OSPF, BGP.
 `,
         "DBMS": `
-Database Management Systems - Key Concepts
-1. Relational Model: Data stored in tables (relations).
-2. SQL: Structured Query Language (DDL, DML, DCL, TCL).
-3. Normalization: Reducing data redundancy (1NF, 2NF, 3NF, BCNF).
-4. ACID Properties: Atomicity, Consistency, Isolation, Durability.
-5. Joins: INNER, LEFT, RIGHT, FULL OUTER.
+Database Management Systems (DBMS) - Detailed Study Guide
+
+Topic 1: Introduction
+- Definition: Software for creating and managing databases.
+- Purpose: Provides a systematic way to create, retrieve, update, and manage data.
+- Relational Model: Data is organized into tables (relations) of rows and columns.
+
+Topic 2: SQL (Structured Query Language)
+- Definition: The standard language for dealing with Relational Databases.
+- Sublanguages:
+  - DDL (Data Definition Language): Defines the database schema (e.g., CREATE TABLE, ALTER TABLE, DROP TABLE).
+  - DML (Data Manipulation Language): Used for adding, deleting, and modifying data (e.g., INSERT, UPDATE, DELETE).
+  - DQL (Data Query Language): Used for performing queries on the data (e.g., SELECT).
+  - DCL (Data Control Language): Deals with rights, permissions, and other controls (e.g., GRANT, REVOKE).
+
+Topic 3: Normalization
+- Goal: To reduce data redundancy and improve data integrity.
+- Normal Forms:
+  - 1NF (First Normal Form): Ensures that table columns hold atomic values and each row is unique.
+  - 2NF (Second Normal Form): Must be in 1NF. All non-key attributes must be fully functional dependent on the primary key.
+  - 3NF (Third Normal Form): Must be in 2NF. All attributes must be dependent only on the primary key, not on other non-key attributes (no transitive dependency).
+  - BCNF (Boyce-Codd Normal Form): A stricter version of 3NF.
+
+Topic 4: ACID Properties
+- Concept: A set of properties of database transactions intended to guarantee validity even in the event of errors, power failures, etc.
+- Properties:
+  - Atomicity: Transactions are all-or-nothing.
+  - Consistency: Any transaction will bring the database from one valid state to another.
+  - Isolation: Concurrent execution of transactions results in a system state that would be obtained if transactions were executed serially.
+  - Durability: Once a transaction has been committed, it will remain so, even in the event of power loss.
+
+Topic 5: Joins
+- Purpose: To combine rows from two or more tables based on a related column between them.
+- Types:
+  - INNER JOIN: Returns records that have matching values in both tables.
+  - LEFT (OUTER) JOIN: Returns all records from the left table, and the matched records from the right table.
+  - RIGHT (OUTER) JOIN: Returns all records from the right table, and the matched records from the left table.
+  - FULL (OUTER) JOIN: Returns all records when there is a match in either left or right table.
 `,
         "Software Engineering": `
-Software Engineering - Key Concepts
-1. SDLC: Software Development Life Cycle (Waterfall, Agile, Spiral).
-2. Agile Methodologies: Scrum, Kanban. Emphasize iterative development.
-3. Version Control: Git (commit, push, pull, branch, merge).
-4. UML Diagrams: Use Case, Class, Sequence diagrams.
-5. Testing: Unit, Integration, System, Acceptance testing.
-`,
-        "Object-Oriented Programming": `
-Object-Oriented Programming (OOP) - Key Concepts
-1. Encapsulation: Bundling data and methods. Data hiding.
-2. Inheritance: 'is-a' relationship. Reusing code from a superclass.
-3. Polymorphism: 'One interface, multiple functions'. Overloading vs. Overriding.
-4. Abstraction: Hiding complex implementation details.
-5. Classes & Objects: A class is a blueprint; an object is an instance.
-`,
-        "Web Technologies": `
-Web Technologies - Key Concepts
-1. Frontend: HTML (structure), CSS (styling), JavaScript (interactivity).
-2. Backend: Server-side languages (Node.js, Python, Java).
-3. Frameworks: React, Angular, Vue.js (frontend); Express, Django (backend).
-4. APIs: RESTful APIs. How client and server communicate.
-5. Databases: SQL (PostgreSQL, MySQL) and NoSQL (MongoDB).
-`,
-        "Compiler Design": `
-Compiler Design - Key Concepts
-1. Phases of a Compiler: Lexical Analysis, Syntax Analysis, Semantic Analysis, Intermediate Code Generation, Code Optimization, Code Generation.
-2. Parsing: Top-down (LL) vs. Bottom-up (LR).
-3. Symbol Table: Stores information about identifiers.
-4. Three-Address Code: A common form of intermediate code.
-5. Lex & Yacc: Tools for building lexical analyzers and parsers.
-`,
-        "Artificial Intelligence": `
-Artificial Intelligence - Key Concepts
-1. Search Algorithms: A*, BFS, DFS for state-space search.
-2. Machine Learning: Supervised, Unsupervised, Reinforcement learning.
-3. Natural Language Processing (NLP): Understanding and generating human language.
-4. Neural Networks: The foundation of deep learning.
-5. Expert Systems: AI systems that emulate human expert decision-making.
-`,
-        "Machine Learning": `
-Machine Learning - Key Concepts
-1. Supervised Learning: Learning from labeled data (e.g., classification, regression).
-2. Unsupervised Learning: Finding patterns in unlabeled data (e.g., clustering, dimensionality reduction).
-3. Models: Linear Regression, Logistic Regression, Decision Trees, SVMs, Neural Networks.
-4. Overfitting & Underfitting: The model is too complex or too simple.
-5. Feature Engineering: Creating meaningful input variables for the model.
-`,
-        "Cybersecurity & Cryptography": `
-Cybersecurity & Cryptography - Key Concepts
-1. CIA Triad: Confidentiality, Integrity, Availability.
-2. Cryptography: Symmetric (AES) vs. Asymmetric (RSA) encryption. Hashing (SHA-256).
-3. Network Security: Firewalls, IDS/IPS, VPNs.
-4. Common Attacks: Phishing, Malware, DDoS, SQL Injection, Cross-Site Scripting (XSS).
-5. Digital Signatures: Ensure authenticity and integrity.
+Software Engineering - Detailed Study Guide
+
+Topic 1: Introduction
+- Definition: The application of a systematic, disciplined, quantifiable approach to the development, operation, and maintenance of software.
+- Goal: To produce high-quality software that is delivered on time and within budget.
+
+Topic 2: Software Development Life Cycle (SDLC)
+- Definition: A process followed for a software project.
+- Models:
+  - Waterfall: A linear, sequential approach. Each phase must be completed before the next begins. Rigid and lacks flexibility.
+  - Agile: An iterative and incremental approach. Emphasizes collaboration, customer feedback, and small, rapid releases.
+  - Spiral: Combines elements of both design and prototyping-in-stages, in an effort to combine advantages of top-down and bottom-up concepts.
+  - V-Model: An extension of the waterfall model where testing is planned in parallel with development.
+
+Topic 3: Agile Methodologies
+- Scrum: An Agile framework for managing complex projects. It consists of Sprints (fixed-length iterations), with roles like Product Owner, Scrum Master, and Development Team. Artifacts include Product Backlog, Sprint Backlog.
+- Kanban: An Agile framework focused on visualizing work, limiting work in progress, and maximizing flow. Uses a Kanban board to track tasks.
+
+Topic 4: Version Control Systems
+- Definition: A system that records changes to a file or set of files over time so that you can recall specific versions later.
+- Git: The most widely used modern distributed version control system.
+- Key Git Commands: 'commit' (save changes), 'push' (upload to remote), 'pull' (download from remote), 'branch' (create a new line of development), 'merge' (join branches).
+
+Topic 5: UML (Unified Modeling Language)
+- Definition: A standardized modeling language used to visualize, specify, construct, and document the artifacts of a software system.
+- Common Diagrams:
+  - Use Case Diagram: Describes how a user interacts with the system.
+  - Class Diagram: Shows the structure of the system's classes, their attributes, methods, and relationships.
+  - Sequence Diagram: Shows how objects interact with each other in a particular scenario, arranged in a time sequence.
+
+Topic 6: Software Testing
+- Goal: To find defects and verify that the software meets requirements.
+- Levels of Testing:
+  - Unit Testing: Testing individual components or modules.
+  - Integration Testing: Testing the interaction between integrated components.
+  - System Testing: Testing the complete and integrated software system.
+  - Acceptance Testing: Testing to determine if the system satisfies the acceptance criteria, often by the client.
 `,
     };
     return contentMap[subjectName] || `No content available for ${subjectName}.`;
