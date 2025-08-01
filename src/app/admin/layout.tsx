@@ -86,12 +86,12 @@ export default function AdminDashboardLayout({
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
     const menuItems = [
-        { href: "/admin", tooltip: "Dashboard", icon: <LayoutDashboard/>, label: "Dashboard" },
-        { href: "/admin/exams", tooltip: "Manage Exams", icon: <BookOpenCheck/>, label: "Manage Exams" },
-        { href: "/admin/students", tooltip: "Students", icon: <Users/>, label: "Students" },
-        { href: "/admin/analytics", tooltip: "Analytics", icon: <BarChart2/>, label: "Analytics" },
-        { href: "/admin/notifications", tooltip: "Notifications", icon: <Bell/>, label: "Notifications" },
-        { href: "/admin/profile", tooltip: "Profile", icon: <User/>, label: "Profile" },
+        { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
+        { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck, tooltip: "Manage Exams" },
+        { href: "/admin/students", label: "Students", icon: Users, tooltip: "Students" },
+        { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
+        { href: "/admin/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" },
+        { href: "/admin/profile", label: "Profile", icon: User, tooltip: "Profile" },
     ];
 
     return (
@@ -113,16 +113,16 @@ export default function AdminDashboardLayout({
                     <SidebarMenu>
                          {menuItems.map((item) => (
                             <SidebarMenuItem key={item.href}>
-                                <SidebarMenuButton 
-                                    asChild 
-                                    tooltip={item.tooltip} 
-                                    isActive={pathname === item.href}
-                                >
-                                    <Link href={item.href}>
-                                        {item.icon}
+                                <Link href={item.href} passHref>
+                                    <SidebarMenuButton 
+                                        asChild={false}
+                                        tooltip={item.tooltip} 
+                                        isActive={pathname === item.href}
+                                    >
+                                        <item.icon className="h-4 w-4" />
                                         {item.label}
-                                    </Link>
-                                </SidebarMenuButton>
+                                    </SidebarMenuButton>
+                                </Link>
                             </SidebarMenuItem>
                         ))}
                     </SidebarMenu>
