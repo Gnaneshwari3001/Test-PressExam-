@@ -8,8 +8,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Check, X, Plane, Info, Calendar as CalendarIcon } from "lucide-react";
-import { format, parseISO, startOfDay, getDay } from "date-fns";
+import { Check, X, Plane, Info, Calendar as CalendarIcon, Briefcase } from "lucide-react";
+import { format, parseISO, startOfDay, getDay, isSameDay } from "date-fns";
 
 type AttendanceStatus = "Present" | "Absent" | "Leave";
 
@@ -44,7 +44,7 @@ const attendanceLog: DailyRecord[] = [
     { date: "2024-07-01", status: "Present" },
     { date: "2024-07-02", status: "Present" },
     { date: "2024-07-03", status: "Present" },
-    { date: "2024-07-04", status: "Leave", reason: "Independence Day" },
+    { date: "2024-07-04", status: "Leave", reason: "Public Holiday" },
     { date: "2024-07-05", status: "Present" },
     { date: "2024-07-08", status: "Present" },
     { date: "2024-07-09", status: "Present" },
@@ -73,14 +73,13 @@ export default function AttendancePage() {
   const getStatusForDate = (selectedDate: Date | undefined): { status: string; reason?: string } => {
     if (!selectedDate) return { status: 'No date selected' };
     
-    const selectedDayStart = startOfDay(selectedDate);
-    const record = attendanceLog.find(log => startOfDay(parseISO(log.date)).getTime() === selectedDayStart.getTime());
+    const record = attendanceLog.find(log => isSameDay(parseISO(log.date), selectedDate));
 
     if (record) {
         return { status: record.status, reason: record.reason };
     }
 
-    if (getDay(selectedDayStart) === 0) { // Sunday
+    if (getDay(selectedDate) === 0) { // Sunday
         return { status: 'Sunday' };
     }
 
@@ -99,6 +98,8 @@ export default function AttendancePage() {
             return <Plane className="h-8 w-8 text-blue-500" />;
         case "Sunday":
             return <CalendarIcon className="h-8 w-8 text-muted-foreground" />;
+        case "Working Day":
+            return <Briefcase className="h-8 w-8 text-muted-foreground" />;
         default:
             return <Info className="h-8 w-8 text-muted-foreground" />;
     }
@@ -223,6 +224,9 @@ export default function AttendancePage() {
                             onSelect={setDate}
                             className="rounded-md border"
                             defaultMonth={new Date()}
+                            captionLayout="dropdown-buttons"
+                            fromYear={2023}
+                            toYear={new Date().getFullYear() + 1}
                         />
                     </CardContent>
                 </Card>
@@ -262,4 +266,3 @@ export default function AttendancePage() {
     </div>
   );
 }
-
