@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Check, X, Plane, Info } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO, startOfDay } from "date-fns";
 
 type AttendanceStatus = "Present" | "Absent" | "Leave";
 
@@ -69,8 +71,8 @@ export default function AttendancePage() {
 
   const selectedDayRecord = useMemo(() => {
     if (!date) return null;
-    const formattedDate = format(date, "yyyy-MM-dd");
-    return attendanceLog.find(log => log.date === formattedDate);
+    const selectedDayStart = startOfDay(date);
+    return attendanceLog.find(log => startOfDay(parseISO(log.date)).getTime() === selectedDayStart.getTime());
   }, [date]);
   
 
@@ -122,15 +124,45 @@ export default function AttendancePage() {
                     <p className="text-xs text-muted-foreground">Marked as absent</p>
                 </CardContent>
             </Card>
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Leaves</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-blue-600">{totalLeave}</div>
-                    <p className="text-xs text-muted-foreground">Approved leaves</p>
-                </CardContent>
-            </Card>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Total Leaves</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-blue-600">{totalLeave}</div>
+                            <p className="text-xs text-muted-foreground">Approved leaves</p>
+                        </CardContent>
+                    </Card>
+                </DialogTrigger>
+                <DialogContent>
+                     <DialogHeader>
+                        <DialogTitle>Leave History</DialogTitle>
+                     </DialogHeader>
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Reason</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {leaves.map((leave, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{format(new Date(leave.date), "PPP")}</TableCell>
+                                    <TableCell className="font-medium">{leave.reason}</TableCell>
+                                </TableRow>
+                            ))}
+                            {leaves.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center text-muted-foreground">No leaves taken.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </DialogContent>
+            </Dialog>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
@@ -183,38 +215,7 @@ export default function AttendancePage() {
                  </Card>
             </div>
         </div>
-
-        <Card className="mt-8">
-            <CardHeader>
-                <CardTitle>Leave History</CardTitle>
-                <CardDescription>A log of your approved leaves.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Reason</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {leaves.map((leave, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{format(new Date(leave.date), "PPP")}</TableCell>
-                                <TableCell className="font-medium">{leave.reason}</TableCell>
-                            </TableRow>
-                        ))}
-                         {leaves.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={2} className="text-center text-muted-foreground">No leaves taken.</TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
     </div>
   );
-}
 
     
