@@ -22,8 +22,8 @@ export default function SubjectsPage() {
   return (
     <div>
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">My Subjects</h1>
-        <p className="text-muted-foreground mt-1">An overview of all the subjects you are enrolled in.</p>
+        <h1 className="text-3xl font-bold tracking-tight font-headline">Platform Subjects</h1>
+        <p className="text-muted-foreground mt-1">An overview of all subjects available for creating exams.</p>
       </header>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {subjects.map((subject) => (
@@ -33,7 +33,7 @@ export default function SubjectsPage() {
               {subject.icon}
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">View available exams and materials for this subject.</p>
+              <p className="text-xs text-muted-foreground">Manage exams and questions for this subject.</p>
             </CardContent>
           </Card>
         ))}
