@@ -225,7 +225,7 @@ export default function AttendancePage() {
                             className="rounded-md border"
                             defaultMonth={new Date()}
                             captionLayout="dropdown-buttons"
-                            fromYear={2023}
+                            fromYear={2000}
                             toYear={2090}
                         />
                     </CardContent>
