@@ -5,7 +5,7 @@ import { getAuth } from "firebase/auth";
 
 // Correct Firebase configuration for the user's project.
 const firebaseConfig = {
-    apiKey: "AIzaSyA43aL5h6GUc5O5wSg_W4J4R5z4Z7g8o8c", // This is a placeholder, will be replaced by a valid one if needed
+    apiKey: "AIzaSyA43aL5h6GUc5O5wSg_W4J4R5z4Z7g8o8c",
     authDomain: "testpress-68b51.firebaseapp.com",
     projectId: "testpress-68b51",
     storageBucket: "testpress-68b51.appspot.com",
