@@ -2,14 +2,14 @@
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { User, Book, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard } from 'lucide-react';
+import { User, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { signOut, onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import { auth, database } from "@/lib/firebase";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -22,6 +22,7 @@ export default function AdminDashboardLayout({
 }) {
     const { toast } = useToast();
     const router = useRouter();
+    const pathname = usePathname();
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -84,6 +85,15 @@ export default function AdminDashboardLayout({
     const displayName = user.displayName || user.email?.split('@')[0] || 'User';
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
+    const menuItems = [
+        { href: "/admin", tooltip: "Dashboard", icon: <LayoutDashboard/>, label: "Dashboard" },
+        { href: "/admin/exams", tooltip: "Manage Exams", icon: <BookOpenCheck/>, label: "Manage Exams" },
+        { href: "/admin/students", tooltip: "Students", icon: <Users/>, label: "Students" },
+        { href: "/admin/analytics", tooltip: "Analytics", icon: <BarChart2/>, label: "Analytics" },
+        { href: "/admin/notifications", tooltip: "Notifications", icon: <Bell/>, label: "Notifications" },
+        { href: "/admin/profile", tooltip: "Profile", icon: <User/>, label: "Profile" },
+    ];
+
     return (
         <SidebarProvider>
             <Sidebar>
@@ -101,24 +111,20 @@ export default function AdminDashboardLayout({
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/admin" tooltip="Dashboard" isActive={true}><LayoutDashboard/>Dashboard</SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/admin/exams/new" tooltip="Manage Exams"><BookOpenCheck/>Manage Exams</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="/admin/students" tooltip="Students"><Users/>Students</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Analytics"><BarChart2/>Analytics</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Notifications"><Bell/>Notifications</SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="#" tooltip="Profile"><User/>Profile</SidebarMenuButton>
-                        </SidebarMenuItem>
+                         {menuItems.map((item) => (
+                            <SidebarMenuItem key={item.href}>
+                                <SidebarMenuButton 
+                                    asChild 
+                                    tooltip={item.tooltip} 
+                                    isActive={pathname === item.href}
+                                >
+                                    <Link href={item.href}>
+                                        {item.icon}
+                                        {item.label}
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
                     </SidebarMenu>
                 </SidebarContent>
                  <SidebarHeader>
@@ -145,4 +151,3 @@ export default function AdminDashboardLayout({
         </SidebarProvider>
     );
 }
-

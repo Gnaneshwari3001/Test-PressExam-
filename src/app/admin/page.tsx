@@ -18,6 +18,11 @@ export default function AdminDashboardPage() {
     <div>
         <header className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold tracking-tight font-headline">Instructor Dashboard</h1>
+             <Link href="/admin/exams/new" passHref>
+                <Button>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add New Exam
+                </Button>
+            </Link>
         </header>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
@@ -48,16 +53,9 @@ export default function AdminDashboardPage() {
         </div>
 
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-                <CardTitle>Manage Exams</CardTitle>
-                <CardDescription>View, add, update, or delete exams from the platform.</CardDescription>
-            </div>
-            <Link href="/admin/exams/new" passHref>
-                <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add New Exam
-                </Button>
-            </Link>
+            <CardHeader>
+                <CardTitle>Recent Exams</CardTitle>
+                <CardDescription>An overview of the most recently created exams.</CardDescription>
             </CardHeader>
             <CardContent>
             <Table>
@@ -71,13 +69,13 @@ export default function AdminDashboardPage() {
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                {exams.map((exam) => (
+                {exams.slice(0, 5).map((exam) => (
                     <TableRow key={exam.id}>
                     <TableCell className="font-medium">{exam.title}</TableCell>
                     <TableCell>{exam.subject}</TableCell>
                     <TableCell>
-                        <Badge variant={"default"}>
-                        Active
+                        <Badge variant={"outline"}>
+                        Published
                         </Badge>
                     </TableCell>
                     <TableCell>{exam.questionCount}</TableCell>

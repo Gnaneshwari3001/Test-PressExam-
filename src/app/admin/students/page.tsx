@@ -2,15 +2,15 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import { ref, get, query, orderByChild, equalTo } from "firebase/database";
-import { auth, database } from "@/lib/firebase";
+import { database } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 interface Student {
     uid: string;
@@ -26,36 +26,39 @@ export default function StudentsPage() {
   
   useEffect(() => {
     const fetchStudents = async () => {
+      setLoading(true);
       const usersRef = ref(database, 'users');
       const studentQuery = query(usersRef, orderByChild('role'), equalTo('student'));
-      const snapshot = await get(studentQuery);
       
-      if (snapshot.exists()) {
-        const studentsData: Student[] = [];
-        snapshot.forEach((childSnapshot) => {
-          studentsData.push({ uid: childSnapshot.key, ...childSnapshot.val() });
-        });
-        setStudents(studentsData);
+      try {
+        const snapshot = await get(studentQuery);
+        if (snapshot.exists()) {
+          const studentsData: Student[] = [];
+          snapshot.forEach((childSnapshot) => {
+            const studentData = childSnapshot.val();
+            studentsData.push({ 
+              uid: childSnapshot.key!, 
+              name: studentData.name,
+              email: studentData.email,
+              photoURL: studentData.photoURL
+            });
+          });
+          setStudents(studentsData);
+        }
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchStudents();
   }, []);
 
   const filteredStudents = students.filter(student => 
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+    student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  if (loading) {
-      return (
-           <div className="space-y-4">
-                <Skeleton className="h-10 w-1/3" />
-                <Skeleton className="h-96 w-full" />
-           </div>
-      )
-  }
 
   return (
     <div>
@@ -66,7 +69,7 @@ export default function StudentsPage() {
       <Card>
         <CardHeader>
           <CardTitle>All Students</CardTitle>
-          <CardDescription>View and manage all registered students.</CardDescription>
+          <CardDescription>View and manage all registered students on the platform.</CardDescription>
             <div className="relative mt-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
@@ -79,37 +82,48 @@ export default function StudentsPage() {
             </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.map((student) => (
-                <TableRow key={student.uid}>
-                  <TableCell className="font-medium flex items-center gap-3">
-                    <Avatar>
-                        <AvatarImage src={student.photoURL} alt={student.name} />
-                        <AvatarFallback>{student.name?.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    {student.name}
-                  </TableCell>
-                  <TableCell>{student.email}</TableCell>
-                  <TableCell className="text-right">
-                    {/* Action buttons can go here */}
-                  </TableCell>
+          {loading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Student</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-           {filteredStudents.length === 0 && (
-                <div className="text-center py-16 text-muted-foreground">
-                    No students found.
-                </div>
-            )}
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.length > 0 ? (
+                  filteredStudents.map((student) => (
+                    <TableRow key={student.uid}>
+                      <TableCell className="font-medium flex items-center gap-3">
+                        <Avatar>
+                            <AvatarImage src={student.photoURL} alt={student.name} />
+                            <AvatarFallback>{student.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        {student.name}
+                      </TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell className="text-right">
+                         <Button variant="outline" size="sm">View Profile</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                   <TableRow>
+                        <TableCell colSpan={3} className="text-center py-16 text-muted-foreground">
+                            No students found.
+                        </TableCell>
+                    </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
