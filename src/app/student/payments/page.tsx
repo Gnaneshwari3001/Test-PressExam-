@@ -66,12 +66,25 @@ export default function PaymentsPage() {
 
     const handleDownloadReceipt = (payment: Payment) => {
         setSelectedPayment(payment);
-        setIsPrinting(true);
+        
+        const handleBeforePrint = () => {
+            setIsPrinting(true);
+        };
+        
+        const handleAfterPrint = () => {
+            setIsPrinting(false);
+            setSelectedPayment(null);
+            window.removeEventListener('beforeprint', handleBeforePrint);
+            window.removeEventListener('afterprint', handleAfterPrint);
+        };
+
+        window.addEventListener('beforeprint', handleBeforePrint);
+        window.addEventListener('afterprint', handleAfterPrint);
+
+        // Timeout ensures state is set before print dialog opens
         setTimeout(() => {
             window.print();
-            setSelectedPayment(null);
-            setIsPrinting(false);
-        }, 100); 
+        }, 0);
     };
     
     if (isPrinting && selectedPayment && user) {
