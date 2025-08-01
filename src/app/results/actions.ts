@@ -3,7 +3,7 @@
 import { analyzeExamResults, AnalyzeExamResultsInput } from "@/ai/flows/analyze-exam-results";
 import { getExamById } from "@/lib/data";
 
-export async function getAnalysis(examId: string, userAnswers: { [key: number]: string }) {
+export async function getAnalysis(examId: string, userAnswers: { [key: number]: string }, studentName: string) {
   try {
     const exam = getExamById(examId);
 
@@ -19,7 +19,7 @@ export async function getAnalysis(examId: string, userAnswers: { [key: number]: 
 
     const analysisInput: AnalyzeExamResultsInput = {
       examName: exam.title,
-      studentName: "Student", // In a real app, this would come from user session
+      studentName: studentName,
       results: results,
     };
     
