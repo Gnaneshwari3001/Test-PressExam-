@@ -18,24 +18,42 @@ interface DailyRecord {
 }
 
 const attendanceLog: DailyRecord[] = [
-  { date: "2023-11-01", status: "Present" },
-  { date: "2023-11-02", status: "Present" },
-  { date: "2023-11-03", status: "Present" },
-  { date: "2023-11-06", status: "Absent", reason: "Unplanned absence" },
-  { date: "2023-11-07", status: "Present" },
-  { date: "2023-11-08", status: "Leave", reason: "Medical Appointment" },
-  { date: "2023-11-09", status: "Leave", reason: "Medical Appointment" },
-  { date: "2023-11-10", status: "Present" },
-  { date: "2023-11-13", status: "Present" },
-  { date: "2023-11-14", status: "Present" },
-  { date: "2023-11-15", status: "Absent", reason: "Unwell" },
-  { date: "2023-11-16", status: "Present" },
-  { date: "2023-11-17", status: "Present" },
-  { date: "2023-11-20", status: "Leave", reason: "Family Function" },
+    // Previous months data...
+    { date: "2024-06-03", status: "Present" },
+    { date: "2024-06-04", status: "Present" },
+    { date: "2024-06-05", status: "Absent", reason: "Unwell" },
+    { date: "2024-06-06", status: "Present" },
+    { date: "2024-06-07", status: "Present" },
+    { date: "2024-06-10", status: "Present" },
+    { date: "2024-06-11", status: "Leave", reason: "Family event" },
+    { date: "2024-06-12", status: "Present" },
+    { date: "2024-06-13", status: "Present" },
+    { date: "2024-06-14", status: "Present" },
+    { date: "2024-06-17", status: "Absent", reason: "Doctor's appointment" },
+    { date: "2024-06-18", status: "Present" },
+    { date: "2024-06-19", status: "Present" },
+    { date: "2024-06-20", status: "Present" },
+    { date: "2024-06-21", status: "Present" },
+    { date: "2024-06-24", status: "Present" },
+    { date: "2024-06-25", status: "Leave", reason: "Personal" },
+    { date: "2024-06-26", status: "Present" },
+    { date: "2024-06-27", status: "Present" },
+    { date: "2024-06-28", status: "Present" },
+    { date: "2024-07-01", status: "Present" },
+    { date: "2024-07-02", status: "Present" },
+    { date: "2024-07-03", status: "Present" },
+    { date: "2024-07-04", status: "Leave", reason: "Public Holiday" },
+    { date: "2024-07-05", status: "Present" },
+    { date: "2024-07-08", status: "Present" },
+    { date: "2024-07-09", status: "Present" },
+    { date: "2024-07-10", status: "Absent", reason: "Sick day" },
+    { date: "2024-07-11", status: "Present" },
+    { date: "2024-07-12", status: "Present" },
+    { date: "2024-07-15", status: "Present" },
 ];
 
 export default function AttendancePage() {
-  const [date, setDate] = useState<Date | undefined>(new Date("2023-11-08"));
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   const { overallPercentage, totalPresent, totalAbsent, totalLeave, totalDays } = useMemo(() => {
     const totalDays = attendanceLog.length;
@@ -127,7 +145,7 @@ export default function AttendancePage() {
                             selected={date}
                             onSelect={setDate}
                             className="rounded-md border"
-                            defaultMonth={new Date("2023-11-01")}
+                            defaultMonth={new Date()}
                         />
                     </CardContent>
                 </Card>
@@ -198,3 +216,5 @@ export default function AttendancePage() {
     </div>
   );
 }
+
+    
