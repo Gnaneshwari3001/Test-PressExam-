@@ -8,16 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const pendingDues = [
-    { id: "due_1", dueDate: "2023-12-15", description: "Spring Semester - Tuition Fee", amount: 1200.00, status: "Upcoming" },
-    { id: "due_2", dueDate: "2023-11-30", description: "Final Exam Fee", amount: 50.00, status: "Due" },
-];
 
 interface Due {
     id: string;
@@ -27,12 +22,26 @@ interface Due {
     status: string;
 }
 
+const initialDues: Due[] = [
+    { id: "due_1", dueDate: "2023-12-15", description: "Spring Semester - Tuition Fee", amount: 1200.00, status: "Upcoming" },
+    { id: "due_2", dueDate: "2023-11-30", description: "Final Exam Fee", amount: 50.00, status: "Due" },
+    { id: "due_3", dueDate: "2023-12-05", description: "Library Book Fine - 'Intro to OS'", amount: 5.50, status: "Due" },
+    { id: "due_4", dueDate: "2023-12-10", description: "Lab Materials Fee - Chemistry", amount: 75.00, status: "Upcoming" },
+    { id: "due_5", dueDate: "2023-11-25", description: "Hostel Fee - November", amount: 250.00, status: "Overdue" },
+    { id: "due_6", dueDate: "2024-01-15", description: "Spring Sports Club Membership", amount: 45.00, status: "Upcoming" },
+    { id: "due_7", dueDate: "2023-12-20", description: "Graduation Gown Rental", amount: 30.00, status: "Upcoming" },
+    { id: "due_8", dueDate: "2023-11-28", description: "Parking Permit - Fall", amount: 100.00, status: "Due" },
+    { id: "due_9", dueDate: "2024-01-05", description: "Health Center Fee", amount: 60.00, status: "Upcoming" },
+    { id: "due_10", dueDate: "2023-10-31", description: "Halloween Party Contribution", amount: 10.00, status: "Overdue" },
+];
+
 export default function DuesPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDue, setSelectedDue] = useState<Due | null>(null);
     const [paymentAmount, setPaymentAmount] = useState("");
+    const [pendingDues, setPendingDues] = useState<Due[]>(initialDues);
 
     const handlePayClick = (due: Due) => {
         setSelectedDue(due);
@@ -44,6 +53,23 @@ export default function DuesPage() {
         if (!selectedDue || !paymentAmount) return;
 
         console.log(`Processing payment of $${paymentAmount} for ${selectedDue.description}`);
+
+        // Update payment history in localStorage
+        const paymentHistory = JSON.parse(localStorage.getItem("paymentHistory") || "[]");
+        const newPayment = {
+            id: `txn_${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            description: selectedDue.description,
+            amount: `$${parseFloat(paymentAmount).toFixed(2)}`,
+            status: "Paid"
+        };
+        const updatedHistory = [...paymentHistory, newPayment];
+        localStorage.setItem("paymentHistory", JSON.stringify(updatedHistory));
+
+
+        // Remove due from the list
+        setPendingDues(pendingDues.filter(d => d.id !== selectedDue.id));
+
         toast({
             title: "Payment Successful!",
             description: `Your payment of $${paymentAmount} has been processed.`,

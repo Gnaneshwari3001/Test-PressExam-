@@ -1,11 +1,22 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Banknote, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 
-const paymentHistory = [
+interface Payment {
+    id: string;
+    date: string;
+    description: string;
+    amount: string;
+    status: string;
+}
+
+const initialPaymentHistory: Payment[] = [
     { id: "txn_1", date: "2023-10-15", description: "Tuition Fee - Fall Semester", amount: "$1200.00", status: "Paid" },
     { id: "txn_2", date: "2023-10-20", description: "Exam Fee - Mid Term", amount: "$50.00", status: "Paid" },
     { id: "txn_3", date: "2023-11-01", description: "Library Fine", amount: "$5.00", status: "Paid" },
@@ -13,6 +24,34 @@ const paymentHistory = [
 ];
 
 export default function PaymentsPage() {
+    const [paymentHistory, setPaymentHistory] = useState<Payment[]>([]);
+
+    useEffect(() => {
+        // Function to load and update payment history
+        const loadPaymentHistory = () => {
+            const storedHistory = JSON.parse(localStorage.getItem("paymentHistory") || "[]");
+            // Combine initial history with stored history, ensuring no duplicates
+            const combinedHistory = [...initialPaymentHistory];
+            storedHistory.forEach((storedPayment: Payment) => {
+                if (!combinedHistory.some(p => p.id === storedPayment.id)) {
+                    combinedHistory.push(storedPayment);
+                }
+            });
+            setPaymentHistory(combinedHistory);
+        };
+
+        // Load history on initial render
+        loadPaymentHistory();
+
+        // Listen for storage changes to update in real-time
+        window.addEventListener('storage', loadPaymentHistory);
+
+        // Cleanup listener on component unmount
+        return () => {
+            window.removeEventListener('storage', loadPaymentHistory);
+        };
+    }, []);
+
   return (
     <div>
       <header className="mb-8">
