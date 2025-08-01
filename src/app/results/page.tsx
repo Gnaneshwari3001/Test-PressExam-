@@ -18,6 +18,8 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import ScoreCard from "@/components/score-card";
 import { analyzeExamResults, AnalyzeExamResultsInput } from "@/ai/flows/analyze-exam-results";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 // Mock data for recent results and answers
 const recentResults = [
