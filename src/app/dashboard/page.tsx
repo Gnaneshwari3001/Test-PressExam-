@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { User, Edit } from "lucide-react";
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, database } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ref, get } from 'firebase/database';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -16,8 +18,21 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        const userRef = ref(database, 'users/' + currentUser.uid);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          if (userData.role === 'instructor') {
+             router.push('/admin');
+          } else {
+             router.push('/student/dashboard');
+          }
+        } else {
+            // Handle case where user data doesn't exist in DB
+            router.push('/login');
+        }
         setUser(currentUser);
       } else {
         router.push('/login');
@@ -27,7 +42,7 @@ export default function DashboardPage() {
     return () => unsubscribe();
   }, [router]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">
             <div className="space-y-8">
@@ -41,10 +56,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!user) {
-    return null; 
-  }
-  
+  // This part will likely not be reached due to redirection, but it's good practice to keep it.
   const displayName = user.displayName || user.email?.split('@')[0] || 'User';
 
   return (
@@ -53,46 +65,8 @@ export default function DashboardPage() {
         <h1 className="text-4xl font-bold tracking-tight font-headline">
           Welcome, {displayName}!
         </h1>
-        <p className="text-muted-foreground mt-2">What would you like to do today?</p>
+        <p className="text-muted-foreground mt-2">Redirecting to your dashboard...</p>
       </header>
-      
-      <div className="grid gap-8 md:grid-cols-2">
-        
-        <Card className="hover:shadow-xl transition-shadow">
-          <CardHeader>
-            <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-3 rounded-full">
-                    <User className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">For Students</CardTitle>
-            </div>
-            <CardDescription>Access your personal dashboard, review results, and track your progress.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <Link href="/student/dashboard" passHref>
-                <Button className="w-full justify-start p-6 text-lg"><User className="mr-4 h-5 w-5"/>Go to Student Dashboard</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-xl transition-shadow">
-          <CardHeader>
-            <div className="flex items-center gap-4">
-                 <div className="bg-accent/10 p-3 rounded-full">
-                    <Edit className="h-8 w-8 text-accent" />
-                </div>
-                <CardTitle className="text-2xl">For Instructors</CardTitle>
-            </div>
-            <CardDescription>Create, manage, and distribute exams to your students seamlessly.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-             <Link href="/admin" passHref>
-                <Button variant="default" className="w-full justify-start p-6 text-lg bg-accent hover:bg-accent/90"><Edit className="mr-4 h-5 w-5"/>Create & Manage Exams</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-      </div>
     </div>
   );
 }

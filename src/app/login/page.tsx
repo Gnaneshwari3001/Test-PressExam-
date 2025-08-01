@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +18,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { auth, database } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { ref, get } from "firebase/database";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
+  role: z.enum(["student", "instructor"], { required_error: "Please select a role." }),
 });
 
 export default function LoginPage() {
@@ -35,14 +39,16 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      role: "student",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
-      
-      if (!userCredential.user.emailVerified) {
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
         toast({
           title: "Email Not Verified",
           description: "Please verify your email before logging in.",
@@ -51,11 +57,39 @@ export default function LoginPage() {
         return;
       }
       
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
-      router.push("/dashboard");
+      // Check user role in Realtime Database
+      const userRef = ref(database, 'users/' + user.uid);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        if (userData.role !== values.role) {
+           toast({
+            title: "Login Failed",
+            description: `You are not registered as a ${values.role}.`,
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
+
+        if (values.role === 'instructor') {
+          router.push("/admin");
+        } else {
+          router.push("/student/dashboard");
+        }
+      } else {
+         toast({
+          title: "Login Failed",
+          description: "User data not found.",
+          variant: "destructive",
+        });
+      }
+
     } catch (error: any) {
       console.error(error);
       toast({
@@ -102,6 +136,40 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+               <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Login as</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="student" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Student
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="instructor" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Instructor
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
                 Login
               </Button>
@@ -118,3 +186,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

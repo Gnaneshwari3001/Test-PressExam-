@@ -1,11 +1,63 @@
+
+"use client"
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
+import { ref, get } from "firebase/database";
+import { auth, database } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Trash2, Edit } from "lucide-react";
 import { exams } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const userRef = ref(database, 'users/' + currentUser.uid);
+        const snapshot = await get(userRef);
+        if (snapshot.exists() && snapshot.val().role === 'instructor') {
+          setUser(currentUser);
+        } else {
+          router.push('/login'); // Redirect if not an instructor
+        }
+      } else {
+        router.push('/login');
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) {
+    return (
+       <div className="container mx-auto px-4 py-12 md:px-6">
+        <Skeleton className="h-12 w-1/3 mb-8" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-64 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null; // Or a message indicating unauthorized access
+  }
+
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <header className="flex justify-between items-center mb-8">
@@ -59,3 +111,4 @@ export default function AdminPage() {
     </div>
   );
 }
+
