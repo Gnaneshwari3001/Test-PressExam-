@@ -32,7 +32,6 @@ export default function PaymentsPage() {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
-    const [isPrinting, setIsPrinting] = useState(false);
 
 
     useEffect(() => {
@@ -64,30 +63,28 @@ export default function PaymentsPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleDownloadReceipt = (payment: Payment) => {
-        setSelectedPayment(payment);
-        
-        const handleBeforePrint = () => {
-            setIsPrinting(true);
-        };
-        
+    useEffect(() => {
+        if (selectedPayment) {
+            window.print();
+        }
+    }, [selectedPayment]);
+    
+    useEffect(() => {
         const handleAfterPrint = () => {
-            setIsPrinting(false);
             setSelectedPayment(null);
-            window.removeEventListener('beforeprint', handleBeforePrint);
+        };
+        window.addEventListener('afterprint', handleAfterPrint);
+        return () => {
             window.removeEventListener('afterprint', handleAfterPrint);
         };
+    }, []);
 
-        window.addEventListener('beforeprint', handleBeforePrint);
-        window.addEventListener('afterprint', handleAfterPrint);
 
-        // Timeout ensures state is set before print dialog opens
-        setTimeout(() => {
-            window.print();
-        }, 0);
+    const handleDownloadReceipt = (payment: Payment) => {
+        setSelectedPayment(payment);
     };
     
-    if (isPrinting && selectedPayment && user) {
+    if (selectedPayment && user) {
         return (
              <ReceiptCard 
                 payment={selectedPayment} 
