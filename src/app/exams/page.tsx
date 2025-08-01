@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,11 +15,27 @@ import {
 import { exams } from "@/lib/data";
 import ExamCard from "@/components/exam-card";
 import { Search } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ExamsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push('/login');
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const subjects = useMemo(() => ["all", ...Array.from(new Set(exams.map((e) => e.subject)))], []);
   const levels = useMemo(() => ["all", ...Array.from(new Set(exams.map((e) => e.level)))], []);
@@ -29,6 +48,33 @@ export default function ExamsPage() {
       return searchMatch && subjectMatch && levelMatch;
     });
   }, [searchTerm, subjectFilter, levelFilter]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12 md:px-6">
+        <div className="text-center mb-12">
+            <Skeleton className="h-10 w-1/2 mx-auto" />
+            <Skeleton className="h-6 w-3/4 mx-auto mt-4" />
+        </div>
+        <div className="mb-8 p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6 md:py-16 lg:py-20">
