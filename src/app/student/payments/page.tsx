@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Banknote, Download } from "lucide-react";
+import { Banknote, Download, ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -32,6 +32,7 @@ export default function PaymentsPage() {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+    const [showBackButton, setShowBackButton] = useState(false);
 
 
     useEffect(() => {
@@ -65,32 +66,46 @@ export default function PaymentsPage() {
 
     useEffect(() => {
         if (selectedPayment) {
+            const handleAfterPrint = () => {
+                setShowBackButton(true);
+            };
+
+            window.addEventListener('afterprint', handleAfterPrint);
             window.print();
+            
+            return () => {
+                window.removeEventListener('afterprint', handleAfterPrint);
+            };
         }
     }, [selectedPayment]);
-    
-    useEffect(() => {
-        const handleAfterPrint = () => {
-            setSelectedPayment(null);
-        };
-        window.addEventListener('afterprint', handleAfterPrint);
-        return () => {
-            window.removeEventListener('afterprint', handleAfterPrint);
-        };
-    }, []);
 
 
     const handleDownloadReceipt = (payment: Payment) => {
+        setShowBackButton(false);
         setSelectedPayment(payment);
     };
+
+    const handleGoBack = () => {
+        setSelectedPayment(null);
+        setShowBackButton(false);
+    }
     
     if (selectedPayment && user) {
         return (
-             <ReceiptCard 
-                payment={selectedPayment} 
-                studentName={user.displayName ?? "Student"}
-                studentEmail={user.email ?? ""}
-              />
+            <div>
+                 {showBackButton && (
+                    <div className="no-print mb-4 flex justify-end">
+                        <Button onClick={handleGoBack}>
+                            <ChevronLeft className="mr-2 h-4 w-4"/> Back to Payments
+                        </Button>
+                    </div>
+                )}
+                 <ReceiptCard 
+                    payment={selectedPayment} 
+                    studentName={user.displayName ?? "Student"}
+                    studentEmail={user.email ?? ""}
+                  />
+             </div>
         )
     }
 
@@ -117,7 +132,7 @@ export default function PaymentsPage() {
     }
 
   return (
-      <div>
+      <div className="no-print">
         <header className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight font-headline">Payments</h1>
           <p className="text-muted-foreground mt-1">View your transaction history and download receipts.</p>
