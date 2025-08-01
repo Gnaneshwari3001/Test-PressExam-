@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { HelpCircle, Send } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   subject: z.string().min(5, "Subject must be at least 5 characters."),
@@ -19,6 +21,8 @@ const formSchema = z.object({
 
 export default function QueryPage() {
     const { toast } = useToast();
+    const searchParams = useSearchParams();
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -26,6 +30,14 @@ export default function QueryPage() {
             message: "",
         },
     });
+
+    useEffect(() => {
+        const subjectParam = searchParams.get("subject");
+        if (subjectParam) {
+            form.setValue("subject", subjectParam);
+        }
+    }, [searchParams, form]);
+
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);

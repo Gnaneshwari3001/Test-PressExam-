@@ -1,9 +1,13 @@
 
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileWarning, CircleDollarSign } from "lucide-react";
+import { FileWarning, CircleDollarSign, HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const pendingDues = [
     { id: "due_1", dueDate: "2023-12-15", description: "Spring Semester - Tuition Fee", amount: "$1200.00", status: "Upcoming" },
@@ -11,6 +15,21 @@ const pendingDues = [
 ];
 
 export default function DuesPage() {
+    const { toast } = useToast();
+    const router = useRouter();
+
+    const handlePayNow = (dueId: string) => {
+        toast({
+            title: "Processing Payment...",
+            description: `Your payment for ${dueId} is being processed.`,
+        });
+        // In a real application, you would integrate a payment gateway here.
+    }
+
+    const handleRequestExtension = (dueDescription: string) => {
+        router.push(`/student/query?subject=Extension Request: ${dueDescription}`);
+    }
+
   return (
     <div>
       <header className="mb-8">
@@ -42,8 +61,13 @@ export default function DuesPage() {
                         <TableCell>
                             <Badge variant={due.status === 'Due' ? 'destructive' : 'secondary'}>{due.status}</Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                           <Button><CircleDollarSign className="mr-2 h-4 w-4"/> Pay Now</Button>
+                        <TableCell className="text-right space-x-2">
+                           <Button size="sm" onClick={() => handlePayNow(due.id)}>
+                               <CircleDollarSign className="mr-2 h-4 w-4"/> Pay Now
+                           </Button>
+                           <Button size="sm" variant="outline" onClick={() => handleRequestExtension(due.description)}>
+                                <HelpCircle className="mr-2 h-4 w-4"/> Request Extension
+                           </Button>
                         </TableCell>
                     </TableRow>
                 ))}
