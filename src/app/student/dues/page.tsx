@@ -118,8 +118,8 @@ export default function DuesPage() {
           </DialogHeader>
           <div className="flex flex-col items-center gap-4 py-4">
               <Image 
-                src="https://placehold.co/250x250.png" 
-                alt="QR Code" 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=testpress@payment&pn=TestPress&am=${paymentAmount}&tn=${encodeURIComponent(selectedDue?.description || 'Fee Payment')}`}
+                alt="QR Code for payment" 
                 width={250} 
                 height={250}
                 data-ai-hint="qr code"
