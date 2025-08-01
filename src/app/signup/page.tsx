@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { auth, database } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, sendEmailVerification, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { ref, set, get } from "firebase/database";
 import { Separator } from "@/components/ui/separator";
 
@@ -51,6 +51,8 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
       
+      await updateProfile(user, { displayName: values.name });
+
       // Add user to Realtime Database
       await set(ref(database, 'users/' + user.uid), {
         name: values.name,
@@ -62,7 +64,7 @@ export default function SignupPage() {
       
       toast({
         title: "Account Created!",
-        description: "A verification email has been sent. Please check your inbox.",
+        description: "A verification email has been sent. Please check your inbox to complete the registration.",
       });
       router.push("/login");
     } catch (error: any) {

@@ -52,9 +52,10 @@ export default function LoginPage() {
       if (!user.emailVerified) {
         toast({
           title: "Email Not Verified",
-          description: "Please verify your email before logging in.",
+          description: "Please verify your email before logging in. A new verification email has been sent.",
           variant: "destructive",
         });
+        await sendEmailVerification(user); // Resend verification email
         return;
       }
       
