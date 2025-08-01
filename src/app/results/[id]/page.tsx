@@ -133,11 +133,11 @@ export default function ResultDetailPage() {
 
   if (result) {
     const { analysis, userAnswers, exam } = result;
+    const scorePercentage = Math.round((analysis.overallScore / exam.questionCount) * 100);
     const chartData = [
       { name: "Correct", value: analysis.overallScore, fill: "hsl(var(--primary))" },
       { name: "Incorrect", value: exam.questionCount - analysis.overallScore, fill: "hsl(var(--destructive))" },
     ];
-    const scorePercentage = Math.round((analysis.overallScore / exam.questionCount) * 100);
 
     return (
         <>

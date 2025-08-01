@@ -93,7 +93,7 @@ body {
     print-color-adjust: exact;
   }
   .no-print {
-    display: none;
+    display: none !important;
   }
   .print-only {
     display: block !important;

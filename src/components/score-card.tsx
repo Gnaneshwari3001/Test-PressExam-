@@ -22,7 +22,7 @@ export default function ScoreCard({ studentName, examTitle, subject, score }: Sc
     const issueDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-screen bg-white">
             <div className="w-full max-w-4xl p-8 bg-white border-8 border-blue-200 rounded-lg shadow-2xl font-serif relative">
                 <div className="absolute top-8 left-8 right-8 bottom-8 border-2 border-blue-300 rounded-md"></div>
                 
