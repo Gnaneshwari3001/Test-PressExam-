@@ -18,10 +18,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import type { Exam } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 
 export default function ManageExamsPage() {
     const { toast } = useToast();
+    const router = useRouter();
     const [exams, setExams] = useState<Exam[]>(initialExams);
 
     const handleDelete = (examId: string) => {
@@ -31,13 +33,6 @@ export default function ManageExamsPage() {
             description: "The exam has been successfully deleted.",
             variant: "destructive"
         })
-    }
-
-    const handleNotImplemented = (feature: string) => {
-        toast({
-            title: "Coming Soon!",
-            description: `${feature} functionality is under development.`,
-        });
     }
 
   return (
@@ -90,13 +85,13 @@ export default function ManageExamsPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => handleNotImplemented('Edit Exam')}>
+                                    <DropdownMenuItem onClick={() => router.push(`/admin/exams/${exam.id}/edit`)}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit Exam
                                     </DropdownMenuItem>
-                                     <DropdownMenuItem onClick={() => handleNotImplemented('Add Questions')}>
+                                     <DropdownMenuItem onClick={() => router.push(`/admin/exams/${exam.id}/questions`)}>
                                         <PlusCircle className="mr-2 h-4 w-4" />
-                                        Add Questions
+                                        Manage Questions
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(exam.id)}>
                                         <Trash2 className="mr-2 h-4 w-4" />
