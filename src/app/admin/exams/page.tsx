@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, MoreHorizontal, Trash2, Edit } from "lucide-react";
-import { exams } from "@/lib/data";
+import { exams as initialExams } from "@/lib/data";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -16,19 +16,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import type { Exam } from "@/lib/types";
 
 
 export default function ManageExamsPage() {
     const { toast } = useToast();
+    const [exams, setExams] = useState<Exam[]>(initialExams);
 
     const handleDelete = (examId: string) => {
-        // Here you would add the logic to delete the exam from your database
-        console.log("Deleting exam:", examId);
+        setExams(currentExams => currentExams.filter(exam => exam.id !== examId));
         toast({
             title: "Exam Deleted",
             description: "The exam has been successfully deleted.",
             variant: "destructive"
         })
+    }
+
+    const handleNotImplemented = (feature: string) => {
+        toast({
+            title: "Coming Soon!",
+            description: `${feature} functionality is under development.`,
+        });
     }
 
   return (
@@ -81,11 +90,11 @@ export default function ManageExamsPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleNotImplemented('Edit Exam')}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit Exam
                                     </DropdownMenuItem>
-                                     <DropdownMenuItem>
+                                     <DropdownMenuItem onClick={() => handleNotImplemented('Add Questions')}>
                                         <PlusCircle className="mr-2 h-4 w-4" />
                                         Add Questions
                                     </DropdownMenuItem>
@@ -105,4 +114,3 @@ export default function ManageExamsPage() {
     </div>
   );
 }
-

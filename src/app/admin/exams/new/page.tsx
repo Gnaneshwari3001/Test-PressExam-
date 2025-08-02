@@ -52,7 +52,7 @@ export default function NewExamPage() {
       title: "Exam Created!",
       description: "The new exam has been successfully created.",
     });
-    router.push("/admin"); // Redirect to the main admin page
+    router.push("/admin/exams"); // Redirect to the manage exams page
   }
 
   return (
