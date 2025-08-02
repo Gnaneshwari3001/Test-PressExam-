@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
-import { auth } from "@/lib/firebase";
+import { auth, database } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ref, get } from "firebase/database";
+
+type UserRole = 'student' | 'instructor' | 'admin';
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -24,12 +27,22 @@ const navLinks = [
 export default function Header() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const userRef = ref(database, 'users/' + currentUser.uid);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+            setRole(snapshot.val().role);
+        }
+      } else {
+        setRole(null);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -71,6 +84,10 @@ export default function Header() {
   );
 
   const getAvatarFallback = () => {
+    if (role === 'student') return 'S';
+    if (role === 'instructor') return 'I';
+    if (role === 'admin') return 'A';
+
     if (user?.displayName) {
       return user.displayName.charAt(0).toUpperCase();
     }
