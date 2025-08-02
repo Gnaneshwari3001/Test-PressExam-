@@ -117,7 +117,6 @@ export default function AdminDashboardLayout({
     ]
 
     const menuItems = role === 'admin' ? adminMenuItems : instructorMenuItems;
-    const layoutTitle = role === 'admin' ? 'Admin Panel' : 'Instructor Panel';
 
     return (
         <SidebarProvider>
@@ -166,11 +165,11 @@ export default function AdminDashboardLayout({
                     <div className="md:hidden">
                        <SidebarTrigger/>
                     </div>
-                     <h2 className="font-bold text-lg hidden md:block">{layoutTitle}</h2>
+                     <h2 className="font-bold text-lg hidden md:block">Welcome, {displayName}!</h2>
                     <div className="flex-1" />
                     <ThemeToggle />
                 </header>
-                <div className="p-8">
+                <div className="p-4 sm:p-6 md:p-8">
                     {children}
                 </div>
             </SidebarInset>

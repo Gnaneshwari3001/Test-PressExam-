@@ -105,7 +105,7 @@ export default function StudentDashboardLayout({
                         </Avatar>
                         <div className="flex flex-col">
                            <span className="font-semibold text-sm">{displayName}</span>
-                           <span className="text-xs text-muted-foreground">{user.email}</span>
+                           <span className="text-xs text-muted-foreground">Student</span>
                         </div>
                     </div>
                 </SidebarHeader>
@@ -141,11 +141,11 @@ export default function StudentDashboardLayout({
                     <div className="md:hidden">
                        <SidebarTrigger/>
                     </div>
-                     <h2 className="font-bold text-lg hidden md:block">Student Panel</h2>
+                     <h2 className="font-bold text-lg hidden md:block">Welcome, {displayName}!</h2>
                     <div className="flex-1" />
                     <ThemeToggle />
                 </header>
-                <div className="p-8">
+                <div className="p-4 sm:p-6 md:p-8">
                     {children}
                 </div>
             </SidebarInset>
