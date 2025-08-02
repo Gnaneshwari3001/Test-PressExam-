@@ -42,9 +42,6 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
-                <Link href="/exams">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90">View Exams</Button>
-                </Link>
                 <Link href="/dashboard">
                   <Button size="lg" variant="outline">Go to Dashboard</Button>
                 </Link>
