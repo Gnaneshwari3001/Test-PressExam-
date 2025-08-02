@@ -95,4 +95,7 @@ body {
   .no-print {
     display: none !important;
   }
+  .print-show {
+    display: block !important;
+  }
 }

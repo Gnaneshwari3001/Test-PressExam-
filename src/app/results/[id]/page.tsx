@@ -147,7 +147,7 @@ export default function ResultDetailPage() {
 
     return (
         <>
-            <div className="print-only hidden">
+            <div className="print-show hidden">
                 <ScoreCard 
                     studentName={user.displayName ?? "Student"}
                     examTitle={exam.title}
