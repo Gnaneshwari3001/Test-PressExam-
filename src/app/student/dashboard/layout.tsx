@@ -28,14 +28,23 @@ export default function StudentDashboardLayout({
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
-                setUser(currentUser);
+                if (!currentUser.emailVerified) {
+                    toast({
+                        title: "Verification Required",
+                        description: "Please verify your email to access the dashboard.",
+                        variant: "destructive"
+                    });
+                    router.push('/login');
+                } else {
+                    setUser(currentUser);
+                }
             } else {
                 router.push('/login');
             }
             setLoading(false);
         });
         return () => unsubscribe();
-    }, [router]);
+    }, [router, toast]);
 
     const handleLogout = async () => {
         try {
