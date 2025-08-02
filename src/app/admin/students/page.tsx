@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
 
 interface User {
@@ -33,6 +34,7 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -156,7 +158,7 @@ export default function StudentsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                         <Button variant="outline" size="sm">View Profile</Button>
+                         <Button variant="outline" size="sm" onClick={() => router.push(`/admin/students/${user.uid}`)}>View Profile</Button>
                       </TableCell>
                     </TableRow>
                   ))
