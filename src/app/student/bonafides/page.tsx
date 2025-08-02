@@ -20,28 +20,75 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { FileText, Send, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useRouter } from "next/navigation";
+
 
 const formSchema = z.object({
   reason: z.string({ required_error: "Please select a reason for your request." }),
   notes: z.string().max(250, "Notes must be less than 250 characters.").optional(),
 });
 
-type Request = {
+type RequestStatus = "Pending" | "Issued" | "Rejected";
+
+interface CertificateRequest {
+    id: string;
+    studentName: string;
+    studentEmail: string;
     reason: string;
     date: string;
-    status: "Pending" | "Issued" | "Rejected";
+    status: RequestStatus;
 }
 
-const initialRequests: Request[] = [
-    { reason: "Passport Application", date: "2023-10-15", status: "Issued"},
-    { reason: "Internship Application", date: "2023-09-02", status: "Issued"},
-];
+
+const getInitialRequests = (): CertificateRequest[] => {
+    if (typeof window === "undefined") return [];
+    const savedRequests = localStorage.getItem("certificateRequests");
+    return savedRequests ? JSON.parse(savedRequests) : [
+        { id: "req1", studentName: "John Doe", studentEmail: "john.doe@example.com", reason: "Passport Application", date: "2023-11-10", status: "Issued" },
+        { id: "req2", studentName: "Jane Smith", studentEmail: "jane.smith@example.com", reason: "Internship Application", date: "2023-11-12", status: "Pending" },
+        { id: "req3", studentName: "Peter Jones", studentEmail: "peter.jones@example.com", reason: "Bank Loan", date: "2023-11-05", status: "Rejected" },
+    ];
+};
 
 export default function BonafidesPage() {
   const { toast } = useToast();
-  const [requests, setRequests] = useState<Request[]>(initialRequests);
+  const [requests, setRequests] = useState<CertificateRequest[]>([]);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const router = useRouter();
   
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        if (currentUser) {
+            setUser(currentUser);
+            const allRequests = getInitialRequests();
+            const userRequests = allRequests.filter(req => req.studentEmail === currentUser.email);
+            setRequests(userRequests);
+        } else {
+            router.push('/login');
+        }
+    });
+
+    // Listen for storage changes to get real-time updates from admin actions
+    const handleStorageChange = () => {
+        const allRequests = getInitialRequests();
+        if (auth.currentUser) {
+            const userRequests = allRequests.filter(req => req.studentEmail === auth.currentUser?.email);
+            setRequests(userRequests);
+        }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        unsubscribe();
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, [router]);
+
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,15 +98,29 @@ export default function BonafidesPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    if (!user) {
+        toast({ title: "Not Logged In", description: "You must be logged in to make a request.", variant: "destructive"});
+        return;
+    }
 
-    const newRequest: Request = {
+    const allRequests = getInitialRequests();
+    const newRequest: CertificateRequest = {
+        id: `req${Date.now()}`,
+        studentName: user.displayName || "Student",
+        studentEmail: user.email || "",
         reason: values.reason,
         date: new Date().toISOString().split('T')[0],
         status: "Pending"
     }
 
-    setRequests([newRequest, ...requests]);
+    const updatedRequests = [newRequest, ...allRequests];
+    localStorage.setItem("certificateRequests", JSON.stringify(updatedRequests));
+
+    // Manually update the component state for the current user
+    setRequests(prev => [newRequest, ...prev]);
+
+    // Also trigger storage event for other tabs/windows if any
+    window.dispatchEvent(new Event('storage'));
     
     toast({
       title: "Request Submitted!",
@@ -155,6 +216,11 @@ export default function BonafidesPage() {
                                     </TableCell>
                                 </TableRow>
                             ))}
+                             {requests.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">No requests found.</TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -163,4 +229,3 @@ export default function BonafidesPage() {
     </div>
   );
 }
-

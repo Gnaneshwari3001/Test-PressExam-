@@ -3,7 +3,7 @@
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { User, Book, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard, ShieldCheck, UploadCloud, History } from 'lucide-react';
+import { User, Book, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard, ShieldCheck, UploadCloud, History, FileBadge } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -99,6 +99,7 @@ export default function AdminDashboardLayout({
     const adminMenuItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
         { href: "/admin/exams", label: "Exam Oversight", icon: BookOpenCheck, tooltip: "Exam Oversight" },
+        { href: "/admin/requests", label: "Certificate Requests", icon: FileBadge, tooltip: "Certificate Requests" },
         { href: "/admin/students", label: "User Management", icon: Users, tooltip: "User Management" },
         { href: "/admin/materials/log", label: "Materials Log", icon: History, tooltip: "Materials Log" },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
@@ -109,6 +110,7 @@ export default function AdminDashboardLayout({
     const instructorMenuItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
         { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck, tooltip: "Manage Exams" },
+        { href: "/admin/requests", label: "Certificate Requests", icon: FileBadge, tooltip: "Certificate Requests" },
         { href: "/admin/materials/upload", label: "Upload Materials", icon: UploadCloud, tooltip: "Upload Materials" },
         { href: "/admin/subjects", label: "Subjects", icon: Book, tooltip: "Subjects" },
         { href: "/admin/students", label: "My Students", icon: Users, tooltip: "My Students" },
