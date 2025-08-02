@@ -1,3 +1,6 @@
+
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpenCheck, GraduationCap, Users, Star } from "lucide-react";
@@ -5,9 +8,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { exams } from "@/lib/data";
 import ExamCard from "@/components/exam-card";
+import { onAuthStateChanged, type User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const featuredExams = exams.slice(0, 3);
+  const router = useRouter();
+
+  const handleStartExamClick = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/exams");
+      } else {
+        router.push("/login");
+      }
+    });
+  };
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -24,9 +42,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
-                <Link href="/exams">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90">Start Exam</Button>
-                </Link>
+                <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={handleStartExamClick}>Start Exam</Button>
                 <Link href="/dashboard">
                   <Button size="lg" variant="outline">Go to Dashboard</Button>
                 </Link>
