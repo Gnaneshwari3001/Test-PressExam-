@@ -1,5 +1,4 @@
 
-
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
@@ -101,6 +100,7 @@ export default function AdminDashboardLayout({
         { href: "/admin/exams", label: "Exam Management", icon: BookOpenCheck },
         { href: "/admin/content", label: "Content Management", icon: Newspaper },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+        { href: "/admin/notifications", label: "Announcements", icon: Bell },
         { href: "/admin/settings", label: "Platform Settings", icon: Settings },
         { href: "/admin/logs", label: "Audit Logs", icon: FileClock },
         { href: "/admin/profile", label: "My Profile", icon: ShieldCheck },
@@ -112,6 +112,7 @@ export default function AdminDashboardLayout({
         { href: "/admin/materials/upload", label: "Upload Materials", icon: UploadCloud },
         { href: "/admin/students", label: "My Students", icon: Users },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+        { href: "/admin/notifications", label: "Announcements", icon: Bell },
         { href: "/admin/profile", label: "My Profile", icon: User },
     ]
 
