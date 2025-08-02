@@ -3,7 +3,7 @@
 "use client"
 
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { User, Book, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard, ShieldCheck, UploadCloud, History, FileBadge } from 'lucide-react';
+import { User, BookOpenCheck, Users, BarChart2, Bell, LogOut, LayoutDashboard, ShieldCheck, UploadCloud, History, FileBadge, Settings, FileClock, Newspaper } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -41,7 +41,6 @@ export default function AdminDashboardLayout({
                         setUser(currentUser);
                         setRole(userData.role);
                     } else {
-                        // If a student tries to access, redirect them
                         router.push('/student/dashboard');
                     }
                 } else {
@@ -97,26 +96,23 @@ export default function AdminDashboardLayout({
     const avatarFallback = displayName.charAt(0).toUpperCase();
 
     const adminMenuItems = [
-        { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
-        { href: "/admin/exams", label: "Exam Oversight", icon: BookOpenCheck, tooltip: "Exam Oversight" },
-        { href: "/admin/requests", label: "Certificate Requests", icon: FileBadge, tooltip: "Certificate Requests" },
-        { href: "/admin/students", label: "User Management", icon: Users, tooltip: "User Management" },
-        { href: "/admin/materials/log", label: "Materials Log", icon: History, tooltip: "Materials Log" },
-        { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
-        { href: "/admin/notifications", label: "Announcements", icon: Bell, tooltip: "Announcements" },
-        { href: "/admin/profile", label: "Admin Profile", icon: ShieldCheck, tooltip: "Admin Profile" },
+        { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/admin/students", label: "User Management", icon: Users },
+        { href: "/admin/exams", label: "Exam Management", icon: BookOpenCheck },
+        { href: "/admin/content", label: "Content Management", icon: Newspaper },
+        { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+        { href: "/admin/settings", label: "Platform Settings", icon: Settings },
+        { href: "/admin/logs", label: "Audit Logs", icon: FileClock },
+        { href: "/admin/profile", label: "My Profile", icon: ShieldCheck },
     ];
     
     const instructorMenuItems = [
-        { href: "/admin", label: "Dashboard", icon: LayoutDashboard, tooltip: "Dashboard" },
-        { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck, tooltip: "Manage Exams" },
-        { href: "/admin/requests", label: "Certificate Requests", icon: FileBadge, tooltip: "Certificate Requests" },
-        { href: "/admin/materials/upload", label: "Upload Materials", icon: UploadCloud, tooltip: "Upload Materials" },
-        { href: "/admin/subjects", label: "Subjects", icon: Book, tooltip: "Subjects" },
-        { href: "/admin/students", label: "My Students", icon: Users, tooltip: "My Students" },
-        { href: "/admin/analytics", label: "Analytics", icon: BarChart2, tooltip: "Analytics" },
-        { href: "/admin/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" },
-        { href: "/admin/profile", label: "My Profile", icon: User, tooltip: "My Profile" },
+        { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/admin/exams", label: "Manage Exams", icon: BookOpenCheck },
+        { href: "/admin/materials/upload", label: "Upload Materials", icon: UploadCloud },
+        { href: "/admin/students", label: "My Students", icon: Users },
+        { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+        { href: "/admin/profile", label: "My Profile", icon: User },
     ]
 
     const menuItems = role === 'admin' ? adminMenuItems : instructorMenuItems;
@@ -144,7 +140,7 @@ export default function AdminDashboardLayout({
                                 <Link href={item.href} passHref>
                                     <SidebarMenuButton 
                                         asChild={false}
-                                        tooltip={item.tooltip} 
+                                        tooltip={item.label} 
                                         isActive={pathname === item.href}
                                     >
                                         <item.icon className="h-4 w-4" />
