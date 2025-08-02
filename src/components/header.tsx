@@ -14,6 +14,7 @@ import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ref, get } from "firebase/database";
+import { Skeleton } from "./ui/skeleton";
 
 type UserRole = 'student' | 'instructor' | 'admin';
 
@@ -28,6 +29,7 @@ export default function Header() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { toast } = useToast();
 
@@ -38,9 +40,8 @@ export default function Header() {
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
             setRole(snapshot.val().role);
-            setUser(currentUser); // Set user only after role is confirmed
+            setUser(currentUser);
         } else {
-            // User exists in auth but not in DB, treat as logged out
             setUser(null);
             setRole(null);
         }
@@ -48,6 +49,7 @@ export default function Header() {
         setUser(null);
         setRole(null);
       }
+      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -89,10 +91,6 @@ export default function Header() {
   );
 
   const getAvatarFallback = () => {
-    if (role === 'student') return 'S';
-    if (role === 'instructor') return 'I';
-    if (role === 'admin') return 'A';
-
     if (user?.displayName) {
       return user.displayName.charAt(0).toUpperCase();
     }
@@ -102,9 +100,38 @@ export default function Header() {
     return 'U';
   }
 
-  const getDisplayName = () => {
-    return user?.displayName || user?.email || "User";
-  }
+  const renderAuthButtons = () => {
+    if (loading) {
+      return <Skeleton className="h-8 w-24" />;
+    }
+
+    if (user && role) {
+      return (
+        <>
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || 'User'} />
+                <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
+            </Avatar>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Link href="/login">
+          <Button variant="ghost">Login</Button>
+        </Link>
+        <Link href="/signup">
+          <Button className="bg-accent hover:bg-accent/90">Sign Up</Button>
+        </Link>
+      </>
+    );
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -119,28 +146,7 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ThemeToggle />
            <div className="hidden md:flex items-center space-x-2">
-             {user && role ? (
-               <>
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || 'User'} />
-                      <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
-                  </Avatar>
-                </div>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
-                </Button>
-               </>
-             ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost">Login</Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="bg-accent hover:bg-accent/90">Sign Up</Button>
-                </Link>
-              </>
-             )}
+             {renderAuthButtons()}
           </div>
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
