@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Award, Download, ChevronLeft } from "lucide-react";
+import { Award, Download, ChevronLeft, FileText as CertificateIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
@@ -13,11 +13,20 @@ import { useRouter } from "next/navigation";
 import { exams } from "@/lib/data";
 import type { Exam, Question } from "@/lib/types";
 
-
+type RequestStatus = "Pending" | "Under Process" | "Issued" | "Rejected";
+interface CertificateRequest {
+    id: string;
+    studentName: string;
+    studentEmail: string;
+    reason: string;
+    date: string;
+    status: RequestStatus;
+}
 interface Certificate {
     id: string;
     courseName: string;
     completionDate: string;
+    type: 'Exam' | 'Bonafide';
 }
 
 
@@ -35,7 +44,9 @@ export default function CertificatesPage() {
                 setUser(currentUser);
 
                 // This logic should run on the client-side
-                const passedExams: Certificate[] = [];
+                const allCerts: Certificate[] = [];
+
+                // 1. Check for passed exams
                 exams.forEach(exam => {
                     const storedAnswersRaw = localStorage.getItem(`exam_answers_${exam.id}`);
                     if (storedAnswersRaw) {
@@ -43,15 +54,32 @@ export default function CertificatesPage() {
                         const correctAnswers = exam.questions.filter(q => userAnswers[q.id] === q.correctAnswer).length;
                         const score = (correctAnswers / exam.questionCount) * 100;
                         if (score >= 80) { // Assuming 80% is the passing score for a certificate
-                            passedExams.push({
+                            allCerts.push({
                                 id: exam.id,
                                 courseName: exam.title,
-                                completionDate: new Date().toISOString().split('T')[0] // Use current date as mock completion
+                                completionDate: new Date().toISOString().split('T')[0], // Use current date as mock completion
+                                type: 'Exam'
                             });
                         }
                     }
                 });
-                setEarnedCertificates(passedExams);
+                
+                // 2. Check for issued bonafide certificates
+                const savedRequests = localStorage.getItem("certificateRequests");
+                if (savedRequests) {
+                    const bonafideRequests: CertificateRequest[] = JSON.parse(savedRequests);
+                    const issuedBonafides = bonafideRequests.filter(req => req.studentEmail === currentUser.email && req.status === 'Issued');
+                    issuedBonafides.forEach(req => {
+                        allCerts.push({
+                            id: req.id,
+                            courseName: `Bonafide Certificate for ${req.reason}`,
+                            completionDate: req.date,
+                            type: 'Bonafide'
+                        });
+                    });
+                }
+
+                setEarnedCertificates(allCerts);
 
             } else {
                 router.push('/login');
@@ -118,6 +146,7 @@ export default function CertificatesPage() {
                     studentName={user.displayName ?? "Student"}
                     courseName={selectedCertificate.courseName}
                     completionDate={new Date(selectedCertificate.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    isBonafide={selectedCertificate.type === 'Bonafide'}
                   />
              </div>
         )
@@ -127,22 +156,22 @@ export default function CertificatesPage() {
     <div className="no-print">
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight font-headline">My Certificates</h1>
-        <p className="text-muted-foreground mt-1">Download your earned certificates for successfully completed courses.</p>
+        <p className="text-muted-foreground mt-1">Download your earned certificates and issued documents.</p>
       </header>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Award /> Earned Certificates</CardTitle>
-          <CardDescription>A list of all the certificates you have earned by scoring 80% or higher.</CardDescription>
+          <CardDescription>A list of all certificates you have earned or that have been issued to you.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             {earnedCertificates.map((cert) => (
                 <Card key={cert.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4">
                      <div className="flex items-center gap-4 mb-4 sm:mb-0">
-                        <Award className="h-8 w-8 text-primary shrink-0"/>
+                        {cert.type === 'Exam' ? <Award className="h-8 w-8 text-primary shrink-0"/> : <CertificateIcon className="h-8 w-8 text-primary shrink-0"/>}
                         <div>
                             <p className="font-semibold">{cert.courseName}</p>
                             <p className="text-xs text-muted-foreground">
-                                Completed on: {new Date(cert.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                Issued on: {new Date(cert.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
                         </div>
                     </div>
@@ -155,7 +184,7 @@ export default function CertificatesPage() {
             {earnedCertificates.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                     <p>You have not earned any certificates yet.</p>
-                    <p>Take an exam and score above 80% to earn one!</p>
+                    <p>Take an exam and score above 80% to earn one, or request a bonafide certificate.</p>
                 </div>
             )}
         </CardContent>

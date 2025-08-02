@@ -6,10 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, FileBadge } from "lucide-react";
+import { Check, X, FileBadge, Clock, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react";
 
-type RequestStatus = "Pending" | "Issued" | "Rejected";
+
+type RequestStatus = "Pending" | "Under Process" | "Issued" | "Rejected";
 
 interface CertificateRequest {
     id: string;
@@ -34,6 +43,7 @@ const getInitialRequests = (): CertificateRequest[] => {
         { id: "req1", studentName: "John Doe", studentEmail: "john.doe@example.com", reason: "Passport Application", date: "2023-11-10", status: "Issued" },
         { id: "req2", studentName: "Jane Smith", studentEmail: "jane.smith@example.com", reason: "Internship Application", date: "2023-11-12", status: "Pending" },
         { id: "req3", studentName: "Peter Jones", studentEmail: "peter.jones@example.com", reason: "Bank Loan", date: "2023-11-05", status: "Rejected" },
+        { id: "req4", studentName: "Emily White", studentEmail: "emily.white@example.com", reason: "Scholarship", date: "2023-11-14", status: "Under Process" },
     ];
 };
 
@@ -52,7 +62,7 @@ export default function CertificateRequestsPage() {
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
-    const handleUpdateRequest = (id: string, newStatus: "Issued" | "Rejected") => {
+    const handleUpdateRequest = (id: string, newStatus: RequestStatus) => {
         const updatedRequests = requests.map(req => 
             req.id === id ? { ...req, status: newStatus } : req
         );
@@ -63,6 +73,14 @@ export default function CertificateRequestsPage() {
             title: "Request Updated",
             description: `The request has been marked as ${newStatus}.`,
         });
+
+        if (newStatus === "Under Process") {
+            toast({
+                title: "Heads Up!",
+                description: "Student will be notified that it may take 3-4 days to process.",
+                duration: 5000,
+            })
+        }
     };
 
     return (
@@ -100,23 +118,38 @@ export default function CertificateRequestsPage() {
                                     <TableCell>
                                         <Badge variant={
                                             req.status === 'Pending' ? 'secondary' : 
-                                            req.status === 'Issued' ? 'default' : 'destructive'
+                                            req.status === 'Issued' ? 'default' : 
+                                            req.status === 'Under Process' ? 'outline' : 'destructive'
                                         }>
                                             {req.status}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        {req.status === 'Pending' && (
-                                            <>
-                                                <Button size="sm" variant="outline" onClick={() => handleUpdateRequest(req.id, "Issued")}>
-                                                    <Check className="mr-2 h-4 w-4"/> Approve
-                                                </Button>
-                                                <Button size="sm" variant="destructive" onClick={() => handleUpdateRequest(req.id, "Rejected")}>
-                                                    <X className="mr-2 h-4 w-4"/> Reject
-                                                </Button>
-                                            </>
-                                        )}
-                                        {req.status !== 'Pending' && (
+                                        {req.status !== 'Issued' && req.status !== 'Rejected' ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Open menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => handleUpdateRequest(req.id, "Under Process")}>
+                                                        <Clock className="mr-2 h-4 w-4" />
+                                                        Mark as Under Process
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleUpdateRequest(req.id, "Issued")}>
+                                                        <Check className="mr-2 h-4 w-4" />
+                                                        Approve & Issue
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="text-destructive" onClick={() => handleUpdateRequest(req.id, "Rejected")}>
+                                                        <X className="mr-2 h-4 w-4" />
+                                                        Reject
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : (
                                             <span className="text-xs text-muted-foreground">Processed</span>
                                         )}
                                     </TableCell>

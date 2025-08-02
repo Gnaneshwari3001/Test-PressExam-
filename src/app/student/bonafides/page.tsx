@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FileText, Send, History } from "lucide-react";
+import { FileText, Send, History, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState, useEffect } from "react";
@@ -31,7 +31,7 @@ const formSchema = z.object({
   notes: z.string().max(250, "Notes must be less than 250 characters.").optional(),
 });
 
-type RequestStatus = "Pending" | "Issued" | "Rejected";
+type RequestStatus = "Pending" | "Under Process" | "Issued" | "Rejected";
 
 interface CertificateRequest {
     id: string;
@@ -50,6 +50,7 @@ const getInitialRequests = (): CertificateRequest[] => {
         { id: "req1", studentName: "John Doe", studentEmail: "john.doe@example.com", reason: "Passport Application", date: "2023-11-10", status: "Issued" },
         { id: "req2", studentName: "Jane Smith", studentEmail: "jane.smith@example.com", reason: "Internship Application", date: "2023-11-12", status: "Pending" },
         { id: "req3", studentName: "Peter Jones", studentEmail: "peter.jones@example.com", reason: "Bank Loan", date: "2023-11-05", status: "Rejected" },
+        { id: "req4", studentName: "Emily White", studentEmail: "emily.white@example.com", reason: "Scholarship", date: "2023-11-14", status: "Under Process" },
     ];
 };
 
@@ -210,9 +211,18 @@ export default function BonafidesPage() {
                                     <TableCell className="font-medium">{req.reason}</TableCell>
                                     <TableCell>{req.date}</TableCell>
                                     <TableCell className="text-right">
-                                        <Badge variant={req.status === 'Pending' ? 'secondary' : req.status === 'Issued' ? 'default' : 'destructive'}>
+                                        <Badge variant={
+                                            req.status === 'Pending' ? 'secondary' : 
+                                            req.status === 'Issued' ? 'default' : 
+                                            req.status === 'Under Process' ? 'outline' : 'destructive'
+                                        }>
                                             {req.status}
                                         </Badge>
+                                        {req.status === 'Issued' && (
+                                            <Button variant="ghost" size="icon" className="ml-2" onClick={() => router.push('/student/certificates')}>
+                                                <Download className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
