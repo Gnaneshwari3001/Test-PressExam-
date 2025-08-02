@@ -133,10 +133,10 @@ export default function ResultDetailPage() {
 
   if (result) {
     const { analysis, userAnswers, exam } = result;
-    const scorePercentage = Math.round((analysis.overallScore / exam.questionCount) * 100);
+    const scorePercentage = Math.round((analysis.correctAnswers / analysis.totalQuestions) * 100);
     const chartData = [
-      { name: "Correct", value: analysis.overallScore, fill: "hsl(var(--primary))" },
-      { name: "Incorrect", value: exam.questionCount - analysis.overallScore, fill: "hsl(var(--destructive))" },
+      { name: "Correct", value: analysis.correctAnswers, fill: "hsl(var(--primary))" },
+      { name: "Incorrect", value: analysis.totalQuestions - analysis.correctAnswers, fill: "hsl(var(--destructive))" },
     ];
 
     return (
@@ -169,9 +169,9 @@ export default function ResultDetailPage() {
                         <CardTitle className="flex items-center gap-2"><BarChart2/> Your Score</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-8 md:grid-cols-2">
-                        <div className="text-center">
-                            <p className="text-6xl font-bold text-primary">{scorePercentage}%</p>
-                            <p className="text-muted-foreground">{analysis.overallScore} out of {exam.questionCount} correct</p>
+                        <div className="text-center flex flex-col justify-center">
+                            <p className="text-6xl font-bold text-primary">{analysis.correctAnswers}<span className="text-3xl text-muted-foreground">/{analysis.totalQuestions}</span></p>
+                            <p className="text-muted-foreground">Correct Answers</p>
                         </div>
                         <div className="h-[200px]">
                             <ResponsiveContainer width="100%" height="100%">

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Clock, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Clock, ChevronLeft, ChevronRight, Check, AlertTriangle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog"
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -47,6 +48,8 @@ export default function TakeExamPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showStartConfirm, setShowStartConfirm] = useState(true);
+  const [examStarted, setExamStarted] = useState(false);
   const [user, setUser] = useState<FirebaseUser | null>(null);
 
   useEffect(() => {
@@ -79,8 +82,8 @@ export default function TakeExamPage() {
   }, [exam, answers, router, shuffledQuestions]);
 
   useEffect(() => {
-    if (isLoading || timeLeft <= 0) {
-        if(timeLeft <= 0 && exam) {
+    if (!examStarted || isLoading || timeLeft <= 0) {
+        if(timeLeft <= 0 && exam && examStarted) {
             handleSubmit();
         }
         return;
@@ -91,7 +94,7 @@ export default function TakeExamPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isLoading, timeLeft, exam, handleSubmit]);
+  }, [isLoading, timeLeft, exam, handleSubmit, examStarted]);
 
   if (isLoading || !exam || !user) {
     return (
@@ -105,6 +108,37 @@ export default function TakeExamPage() {
         </div>
     );
   }
+
+  const handleStartExam = () => {
+    setShowStartConfirm(false);
+    setExamStarted(true);
+  }
+
+  if (showStartConfirm) {
+     return (
+        <AlertDialog open={showStartConfirm}>
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2"><AlertTriangle/> Are you ready to begin?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    <p className="mb-2">You are about to start the exam: <strong>{exam.title}</strong></p>
+                    <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li>You will have <strong>{exam.duration} minutes</strong> to complete {exam.questionCount} questions.</li>
+                        <li>Once you start, the timer will not stop.</li>
+                        <li>Ensure you have a stable internet connection.</li>
+                        <li>Do not close or refresh this window.</li>
+                    </ul>
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <Button variant="outline" onClick={() => router.back()}>Cancel</Button>
+                <AlertDialogAction onClick={handleStartExam}>Start Exam</AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+     );
+  }
+
 
   const handleAnswerChange = (questionId: number, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -190,5 +224,3 @@ export default function TakeExamPage() {
       </AlertDialog>
     </div>
   );
-
-    

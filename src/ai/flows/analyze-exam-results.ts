@@ -21,7 +21,8 @@ const AnalyzeExamResultsInputSchema = z.object({
 export type AnalyzeExamResultsInput = z.infer<typeof AnalyzeExamResultsInputSchema>;
 
 const AnalyzeExamResultsOutputSchema = z.object({
-  overallScore: z.number().describe('The overall score of the exam.'),
+  totalQuestions: z.number().describe('The total number of questions in the exam.'),
+  correctAnswers: z.number().describe('The total number of correct answers.'),
   areasForImprovement: z
     .array(z.string())
     .describe('The areas where the student needs to improve.'),
@@ -45,6 +46,8 @@ const analyzeExamResultsPrompt = ai.definePrompt({
   prompt: `You are an AI-powered educational assistant. Your task is to analyze exam results and provide personalized feedback to students.
 
   Analyze the exam results for {{studentName}} on the exam "{{examName}}".
+  
+  First, calculate the total number of questions and the total number of correct answers. A correct answer is worth 1 mark, and an incorrect answer is worth 0 marks. Do not calculate a percentage.
 
   Exam Results:
   {{#each results}}
@@ -53,8 +56,8 @@ const analyzeExamResultsPrompt = ai.definePrompt({
   Correct: {{this.isCorrect}}
   {{/each}}
 
-  Based on the results, identify areas where the student needs to improve and provide detailed feedback to help them enhance their learning outcomes.
-  The response should be in JSON format. The JSON should have the following schema:
+  Based on the results, identify areas where the student needs to improve and provide detailed, encouraging feedback to help them enhance their learning outcomes.
+  The response must be in JSON format. The JSON should have the following schema:
   ${JSON.stringify(AnalyzeExamResultsOutputSchema.describe)}
   `,
 });
