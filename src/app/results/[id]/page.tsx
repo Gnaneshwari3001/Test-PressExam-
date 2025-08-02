@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle, XCircle, AlertCircle, Lightbulb, BarChart2, Download, ChevronLeft } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, Lightbulb, BarChart2, Download, ChevronLeft, HelpCircle, Forward, Check, MinusCircle } from "lucide-react";
 import Link from "next/link";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -70,7 +70,7 @@ export default function ResultDetailPage() {
       
       const resultsForAnalysis = questions.map(q => ({
         question: q.question,
-        answer: userAnswers[q.id] || "No answer",
+        answer: userAnswers[q.id] || "Not Answered",
         isCorrect: (userAnswers[q.id] || "No answer") === q.correctAnswer,
       }));
 
@@ -134,9 +134,15 @@ export default function ResultDetailPage() {
   if (result) {
     const { analysis, userAnswers, exam } = result;
     const scorePercentage = Math.round((analysis.correctAnswers / analysis.totalQuestions) * 100);
+    
+    const attemptedCount = Object.keys(userAnswers).length;
+    const skippedCount = analysis.totalQuestions - attemptedCount;
+    const incorrectCount = attemptedCount - analysis.correctAnswers;
+
     const chartData = [
       { name: "Correct", value: analysis.correctAnswers, fill: "hsl(var(--primary))" },
-      { name: "Incorrect", value: analysis.totalQuestions - analysis.correctAnswers, fill: "hsl(var(--destructive))" },
+      { name: "Incorrect", value: incorrectCount, fill: "hsl(var(--destructive))" },
+      { name: "Skipped", value: skippedCount, fill: "hsl(var(--muted-foreground))" },
     ];
 
     return (
@@ -146,7 +152,8 @@ export default function ResultDetailPage() {
                     studentName={user.displayName ?? "Student"}
                     examTitle={exam.title}
                     subject={exam.subject}
-                    score={scorePercentage}
+                    score={analysis.correctAnswers}
+                    totalQuestions={analysis.totalQuestions}
                 />
             </div>
             <div className="container mx-auto px-4 py-12 md:px-6 md:py-16 no-print">
@@ -166,14 +173,33 @@ export default function ResultDetailPage() {
                 <div className="lg:col-span-2 space-y-8">
                     <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BarChart2/> Your Score</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><BarChart2/> Performance Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-8 md:grid-cols-2">
-                        <div className="text-center flex flex-col justify-center">
-                            <p className="text-6xl font-bold text-primary">{analysis.correctAnswers}<span className="text-3xl text-muted-foreground">/{analysis.totalQuestions}</span></p>
-                            <p className="text-muted-foreground">Correct Answers</p>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center p-3 rounded-md bg-secondary">
+                                <span className="font-medium flex items-center gap-2"><HelpCircle className="h-4 w-4"/> Total Questions</span>
+                                <span className="font-bold text-lg">{analysis.totalQuestions}</span>
+                            </div>
+                             <div className="flex justify-between items-center p-3 rounded-md bg-secondary">
+                                <span className="font-medium flex items-center gap-2"><Forward className="h-4 w-4"/> Attempted</span>
+                                <span className="font-bold text-lg">{attemptedCount}</span>
+                            </div>
+                             <div className="flex justify-between items-center p-3 rounded-md bg-secondary">
+                                <span className="font-medium flex items-center gap-2"><MinusCircle className="h-4 w-4"/> Skipped</span>
+                                <span className="font-bold text-lg">{skippedCount}</span>
+                            </div>
+                             <div className="flex justify-between items-center p-3 rounded-md bg-green-500/10 text-green-700 dark:text-green-400">
+                                <span className="font-medium flex items-center gap-2"><Check className="h-4 w-4"/> Correct</span>
+                                <span className="font-bold text-lg">{analysis.correctAnswers}</span>
+                            </div>
+                             <div className="flex justify-between items-center p-3 rounded-md bg-red-500/10 text-red-700 dark:text-red-500">
+                                <span className="font-medium flex items-center gap-2"><XCircle className="h-4 w-4"/> Incorrect</span>
+                                <span className="font-bold text-lg">{incorrectCount}</span>
+                            </div>
                         </div>
-                        <div className="h-[200px]">
+
+                        <div className="h-[250px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <RechartsBarChart data={chartData} layout="vertical" margin={{left: 20}}>
                                     <XAxis type="number" hide />

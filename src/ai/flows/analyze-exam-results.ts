@@ -47,16 +47,16 @@ const analyzeExamResultsPrompt = ai.definePrompt({
 
   Analyze the exam results for {{studentName}} on the exam "{{examName}}".
   
-  First, calculate the total number of questions and the total number of correct answers. A correct answer is worth 1 mark, and an incorrect answer is worth 0 marks. Do not calculate a percentage.
+  First, calculate the total number of questions and the total number of correct answers. A correct answer is worth 1 mark, and an incorrect or unanswered question is worth 0 marks. Do not calculate a percentage.
 
   Exam Results:
   {{#each results}}
   Question: {{this.question}}
-  Answer: {{this.answer}}
+  Student's Answer: {{this.answer}}
   Correct: {{this.isCorrect}}
   {{/each}}
 
-  Based on the results, identify areas where the student needs to improve and provide detailed, encouraging feedback to help them enhance their learning outcomes.
+  Based on the results, identify areas where the student needs to improve and provide detailed, encouraging feedback to help them enhance their learning outcomes. If a student skipped many questions, encourage them to attempt all questions next time.
   The response must be in JSON format. The JSON should have the following schema:
   ${JSON.stringify(AnalyzeExamResultsOutputSchema.describe)}
   `,

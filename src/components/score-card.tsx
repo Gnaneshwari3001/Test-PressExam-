@@ -6,19 +6,21 @@ interface ScoreCardProps {
     examTitle: string;
     subject: string;
     score: number;
+    totalQuestions: number;
 }
 
-const getGrade = (score: number): { grade: string; remark: string } => {    
-    if (score >= 90) return { grade: "A+", remark: "Excellent" };
-    if (score >= 80) return { grade: "A", remark: "Very Good" };
-    if (score >= 70) return { grade: "B", remark: "Good" };
-    if (score >= 60) return { grade: "C", remark: "Satisfactory" };
-    if (score >= 50) return { grade: "D", remark: "Needs Improvement" };
+const getGrade = (score: number, total: number): { grade: string; remark: string } => {    
+    const percentage = (score / total) * 100;
+    if (percentage >= 90) return { grade: "A+", remark: "Excellent" };
+    if (percentage >= 80) return { grade: "A", remark: "Very Good" };
+    if (percentage >= 70) return { grade: "B", remark: "Good" };
+    if (percentage >= 60) return { grade: "C", remark: "Satisfactory" };
+    if (percentage >= 50) return { grade: "D", remark: "Needs Improvement" };
     return { grade: "F", remark: "Fail" };
 };
 
-export default function ScoreCard({ studentName, examTitle, subject, score }: ScoreCardProps) {
-    const { grade, remark } = getGrade(score);
+export default function ScoreCard({ studentName, examTitle, subject, score, totalQuestions }: ScoreCardProps) {
+    const { grade, remark } = getGrade(score, totalQuestions);
     const issueDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     return (
@@ -48,7 +50,7 @@ export default function ScoreCard({ studentName, examTitle, subject, score }: Sc
                         </div>
                          <div>
                             <p className="text-sm font-semibold text-gray-500">Score</p>
-                            <p className="font-bold">{score}%</p>
+                            <p className="font-bold">{score} / {totalQuestions}</p>
                         </div>
                         <div>
                             <p className="text-sm font-semibold text-gray-500">Grade</p>
