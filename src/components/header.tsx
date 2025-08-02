@@ -104,7 +104,6 @@ export default function Header() {
                       <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || 'User'} />
                       <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-muted-foreground">{getDisplayName()}</span>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" /> Logout
