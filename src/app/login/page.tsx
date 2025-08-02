@@ -89,11 +89,19 @@ export default function LoginPage() {
 
     } catch (error: any) {
       console.error(error);
-      toast({
-        title: "Login Failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        toast({
+            title: "Login Failed",
+            description: "Invalid email or password. Please try again.",
+            variant: "destructive"
+        });
+      } else {
+        toast({
+            title: "Login Failed",
+            description: error.message,
+            variant: "destructive",
+        });
+      }
     }
   }
 
