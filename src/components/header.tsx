@@ -33,14 +33,19 @@ export default function Header() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
         const userRef = ref(database, 'users/' + currentUser.uid);
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
             setRole(snapshot.val().role);
+            setUser(currentUser); // Set user only after role is confirmed
+        } else {
+            // User exists in auth but not in DB, treat as logged out
+            setUser(null);
+            setRole(null);
         }
       } else {
+        setUser(null);
         setRole(null);
       }
     });
@@ -114,7 +119,7 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ThemeToggle />
            <div className="hidden md:flex items-center space-x-2">
-             {user ? (
+             {user && role ? (
                <>
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
@@ -148,7 +153,7 @@ export default function Header() {
               <div className="flex flex-col space-y-4">
                 <NavLinks className="flex-col items-start space-x-0 space-y-2" onLinkClick={() => setIsSheetOpen(false)} />
                 <div className="flex flex-col space-y-2 pt-4">
-                  {user ? (
+                  {user && role ? (
                       <Button variant="outline" onClick={handleLogout} className="w-full">
                         <LogOut className="mr-2 h-4 w-4" /> Logout
                       </Button>
