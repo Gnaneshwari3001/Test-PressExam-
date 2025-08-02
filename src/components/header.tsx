@@ -42,6 +42,7 @@ export default function Header() {
             setRole(snapshot.val().role);
             setUser(currentUser);
         } else {
+            // This case might happen if DB entry is not created yet or on sign out
             setUser(null);
             setRole(null);
         }
