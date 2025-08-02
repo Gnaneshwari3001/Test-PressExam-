@@ -8,11 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const auditLog = [
-    { id: 1, user: { name: "Admin User", avatar: "/avatars/01.png" }, action: "User Login", details: "Logged in via password", ip: "192.168.1.1", timestamp: "2023-12-01 10:00 AM" },
-    { id: 2, user: { name: "Instructor Jane", avatar: "/avatars/02.png" }, action: "Exam Created", details: "Created 'Introduction to Algebra'", ip: "203.0.113.25", timestamp: "2023-12-01 09:30 AM" },
-    { id: 3, user: { name: "Admin User", avatar: "/avatars/01.png" }, action: "User Edited", details: "Changed role for student@example.com", ip: "192.168.1.1", timestamp: "2023-11-30 05:15 PM" },
-    { id: 4, user: { name: "Student John", avatar: "/avatars/03.png" }, action: "Exam Submitted", details: "Submitted 'Basics of Physics'", ip: "198.51.100.10", timestamp: "2023-11-30 02:45 PM" },
-    { id: 5, user: { name: "Instructor Jane", avatar: "/avatars/02.png" }, action: "Content Uploaded", details: "Uploaded 'algebra-notes.pdf'", ip: "203.0.113.25", timestamp: "2023-11-29 11:00 AM" },
+    { id: 1, user: { name: "Adam John", avatar: "/avatars/01.png" }, action: "User Login", details: "Logged in via password", ip: "192.168.1.1", timestamp: "2023-12-01 10:00 AM" },
+    { id: 2, user: { name: "Jane Doe", avatar: "/avatars/02.png" }, action: "Exam Created", details: "Created 'Introduction to Algebra'", ip: "203.0.113.25", timestamp: "2023-12-01 09:30 AM" },
+    { id: 3, user: { name: "Adam John", avatar: "/avatars/01.png" }, action: "User Edited", details: "Changed role for student@example.com", ip: "192.168.1.1", timestamp: "2023-11-30 05:15 PM" },
+    { id: 4, user: { name: "Peter Jones", avatar: "/avatars/03.png" }, action: "Exam Submitted", details: "Submitted 'Basics of Physics'", ip: "198.51.100.10", timestamp: "2023-11-30 02:45 PM" },
+    { id: 5, user: { name: "Jane Doe", avatar: "/avatars/02.png" }, action: "Content Uploaded", details: "Uploaded 'algebra-notes.pdf'", ip: "203.0.113.25", timestamp: "2023-11-29 11:00 AM" },
 ];
 
 const getActionIcon = (action: string) => {
