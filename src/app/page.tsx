@@ -80,7 +80,7 @@ export default function Home() {
             </h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {featuredExams.map((exam) => (
-                <ExamCard key={exam.id} exam={exam} />
+                <ExamCard key={exam.id} exam={exam} isActionDisabled={true} />
               ))}
             </div>
             <div className="text-center mt-12">

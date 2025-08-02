@@ -12,9 +12,10 @@ import { useRouter } from "next/navigation";
 
 interface ExamCardProps {
   exam: Exam;
+  isActionDisabled?: boolean;
 }
 
-export default function ExamCard({ exam }: ExamCardProps) {
+export default function ExamCard({ exam, isActionDisabled = false }: ExamCardProps) {
   const router = useRouter();
 
   const handleStartExamClick = () => {
@@ -51,7 +52,7 @@ export default function ExamCard({ exam }: ExamCardProps) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleStartExamClick}>
+        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleStartExamClick} disabled={isActionDisabled}>
           Start Exam
         </Button>
       </CardFooter>
