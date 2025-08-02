@@ -19,9 +19,12 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { auth, database } from "@/lib/firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { ref, get, set } from "firebase/database";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Label } from "@/components/ui/label";
 
 
 const formSchema = z.object({
@@ -32,6 +35,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const [resetEmail, setResetEmail] = useState("");
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,6 +94,29 @@ export default function LoginPage() {
         description: error.message,
         variant: "destructive",
       });
+    }
+  }
+
+  async function handlePasswordReset(e: React.FormEvent) {
+    e.preventDefault();
+    if (!resetEmail) {
+        toast({ title: "Email required", description: "Please enter your email address.", variant: "destructive"});
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, resetEmail);
+        toast({
+            title: "Password Reset Email Sent",
+            description: "Please check your inbox for instructions to reset your password.",
+        });
+        setIsResetDialogOpen(false);
+        setResetEmail("");
+    } catch (error: any) {
+        toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive"
+        });
     }
   }
 
@@ -153,7 +181,38 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Password</FormLabel>
+                       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="link" size="sm" type="button" className="p-0 h-auto text-xs">Forgot Password?</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Reset Password</DialogTitle>
+                                    <DialogDescription>Enter your email address and we'll send you a link to reset your password.</DialogDescription>
+                                </DialogHeader>
+                                <form onSubmit={handlePasswordReset}>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="reset-email" className="text-right">Email</Label>
+                                            <Input
+                                                id="reset-email"
+                                                type="email"
+                                                value={resetEmail}
+                                                onChange={(e) => setResetEmail(e.target.value)}
+                                                className="col-span-3"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button type="submit">Send Reset Link</Button>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
