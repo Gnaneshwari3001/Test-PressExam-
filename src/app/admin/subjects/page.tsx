@@ -3,8 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookCopy, Cpu, Database, Globe, HardDrive, Network, PenTool, Puzzle, Shield, Waypoints, Download, PlayCircle } from "lucide-react";
-import Link from "next/link";
+import { BookCopy, Cpu, Database, Globe, HardDrive, Network, PenTool, Puzzle, Shield, Waypoints, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 const subjects = [
     { name: "Data Structures", icon: <Waypoints className="h-8 w-8 text-primary" />, examId: "cs-202" },
@@ -293,18 +295,6 @@ Topic 6: Software Testing
 };
 
 export default function SubjectsPage() {
-  const handleDownload = (subjectName: string) => {
-    const content = getSubjectContent(subjectName);
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${subjectName.toLowerCase().replace(/ /g, '-')}-materials.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div>
@@ -323,12 +313,23 @@ export default function SubjectsPage() {
               <p className="text-xs text-muted-foreground">Manage exams and questions for this subject.</p>
             </CardContent>
             <CardFooter className="flex flex-col items-stretch gap-2">
-                <Button variant="outline" onClick={() => handleDownload(subject.name)}>
-                  <Download className="mr-2 h-4 w-4" /> Materials
-                </Button>
-                <Link href={`/exams/${subject.examId}`} passHref>
-                    <Button className="w-full"><PlayCircle className="mr-2 h-4 w-4" /> Take Exam</Button>
-                </Link>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                            <FileText className="mr-2 h-4 w-4" /> View Curriculum
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                        <DialogHeader>
+                            <DialogTitle>{subject.name} - Curriculum</DialogTitle>
+                        </DialogHeader>
+                        <ScrollArea className="h-96 w-full">
+                           <div className="prose dark:prose-invert whitespace-pre-wrap p-4">
+                                {getSubjectContent(subject.name)}
+                           </div>
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
             </CardFooter>
           </Card>
         ))}
